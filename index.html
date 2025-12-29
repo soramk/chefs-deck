@@ -27,11 +27,809 @@
 <body>
     <div id="root"></div>
 
-    <!-- JavaScript Modules -->
-    <script type="text/babel" src="js/icons.js"></script>
-    <script type="text/babel" src="js/data.js"></script>
-    <script type="text/babel" src="js/components.js"></script>
-    <script type="text/babel" src="js/app.js"></script>
+    <!-- JavaScript Modules (Inline for Babel compatibility) -->
+    <script type="text/babel">
+        const { useState, useEffect, useRef, useMemo } = React;
+
+        // --- Icons ---
+        const IconChefHat = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 10.18 0A4 4 0 0 1 18 13.87V21H6Z"/>
+                <line x1="6" y1="17" x2="18" y2="17"/>
+            </svg>
+        );
+
+        const IconLayers = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                <polyline points="2 17 12 22 22 17"/>
+                <polyline points="2 12 12 17 22 12"/>
+            </svg>
+        );
+
+        const IconPlus = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+        );
+
+        const IconTrash = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+            </svg>
+        );
+
+        const IconExternalLink = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                <polyline points="15 3 21 3 21 9"/>
+                <line x1="10" y1="14" x2="21" y2="3"/>
+            </svg>
+        );
+
+        const IconSearch = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+        );
+
+        const IconSave = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                <polyline points="17 21 17 13 7 13 7 21"/>
+                <polyline points="7 3 7 8 15 8"/>
+            </svg>
+        );
+
+        const IconEdit = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+        );
+
+        const IconLoader = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <line x1="12" y1="2" x2="12" y2="6"/>
+                <line x1="12" y1="18" x2="12" y2="22"/>
+                <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/>
+                <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/>
+                <line x1="2" y1="12" x2="6" y2="12"/>
+                <line x1="18" y1="12" x2="22" y2="12"/>
+                <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/>
+                <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/>
+            </svg>
+        );
+
+        const IconUsers = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+        );
+
+        const IconCalculator = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <rect width="16" height="20" x="4" y="2" rx="2"/>
+                <line x1="8" x2="16" y1="6" y2="6"/>
+                <line x1="16" x2="16" y1="14" y2="18"/>
+                <path d="M16 10h.01"/>
+                <path d="M12 10h.01"/>
+                <path d="M8 10h.01"/>
+                <path d="M12 14h.01"/>
+                <path d="M8 14h.01"/>
+                <path d="M12 18h.01"/>
+                <path d="M8 18h.01"/>
+            </svg>
+        );
+
+        const IconChevronDown = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <path d="m6 9 6 6 6-6"/>
+            </svg>
+        );
+
+        const IconChevronUp = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <path d="m18 15-6-6-6 6"/>
+            </svg>
+        );
+
+        // --- Mock Data Generator (Updated Structure) ---
+        const simulateScraping = (url) => {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    let title = "Webから収集した美味しいレシピ";
+                    let ingredients = [
+                        { name: "玉ねぎ", amount: 1, unit: "個" },
+                        { name: "人参", amount: 1, unit: "本" },
+                        { name: "オリーブオイル", amount: "", unit: "適量" },
+                        { name: "塩コショウ", amount: "", unit: "少々" }
+                    ];
+                    let steps = ["野菜を切ります。", "フライパンで炒めます。", "火が通ったら完成です。"];
+                    let image = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&auto=format&fit=crop&q=60";
+                    let baseServings = 2;
+
+                    if (url.includes("curry") || url.includes("カレー")) {
+                        title = "隠し味が決め手の特製カレー";
+                        ingredients = [
+                            { name: "豚肉", amount: 200, unit: "g" },
+                            { name: "玉ねぎ", amount: 2, unit: "個" },
+                            { name: "人参", amount: 1, unit: "本" },
+                            { name: "じゃがいも", amount: 2, unit: "個" },
+                            { name: "カレールー", amount: 0.5, unit: "箱" },
+                            { name: "チョコレート", amount: 1, unit: "カケ" }
+                        ];
+                        steps = ["野菜を一口大に切る。", "鍋で肉と野菜をよく炒める。", "水を加えて20分煮込む。", "火を止めてルーとチョコを溶かす。", "弱火で10分煮込んで完成。"];
+                        image = "https://images.unsplash.com/photo-1604152135912-04a022e23696?w=500&auto=format&fit=crop&q=60";
+                        baseServings = 4;
+                    } else if (url.includes("pasta") || url.includes("パスタ")) {
+                        title = "基本のトマトバジルパスタ";
+                        ingredients = [
+                            { name: "パスタ", amount: 200, unit: "g" },
+                            { name: "トマト缶", amount: 1, unit: "缶" },
+                            { name: "ニンニク", amount: 1, unit: "片" },
+                            { name: "オリーブオイル", amount: 2, unit: "大さじ" },
+                            { name: "バジル", amount: "", unit: "適量" }
+                        ];
+                        steps = ["お湯を沸かしてパスタを茹でる。", "フライパンでニンニクを炒める。", "トマト缶を入れて煮詰める。", "茹で上がったパスタを和える。", "バジルを散らす。"];
+                        image = "https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=500&auto=format&fit=crop&q=60";
+                        baseServings = 2;
+                    }
+
+                    resolve({
+                        id: Date.now(),
+                        title,
+                        url,
+                        image,
+                        ingredients,
+                        steps,
+                        baseServings,
+                        notes: "Webサイトからの収集（シミュレーション）",
+                        createdAt: new Date().toISOString()
+                    });
+                }, 1500);
+            });
+        };
+
+        // --- Helper: Data Migration ---
+        const migrateRecipe = (recipe) => {
+            if (recipe.ingredients && recipe.ingredients.length > 0 && typeof recipe.ingredients[0] === 'string') {
+                const newIngredients = recipe.ingredients.map(str => {
+                    const match = str.match(/^(.+?)\s*([0-9.]+|½|¼|¾)\s*(.+)?$/);
+                    if (match) {
+                        return { 
+                            name: match[1].trim(), 
+                            amount: isNaN(parseFloat(match[2])) ? match[2] : parseFloat(match[2]), 
+                            unit: match[3] ? match[3].trim() : "" 
+                        };
+                    }
+                    return { name: str, amount: "", unit: "" };
+                });
+                return { ...recipe, ingredients: newIngredients, baseServings: 2 };
+            }
+            if (!recipe.baseServings) {
+                return { ...recipe, baseServings: 2 };
+            }
+            return recipe;
+        };
+
+        // --- Components ---
+
+        const RecipeCard = ({ recipe, onDelete, onEdit }) => {
+            const [isExpanded, setIsExpanded] = useState(false);
+            const [scaleFactor, setScaleFactor] = useState(1);
+            
+            const currentServings = Math.round((recipe.baseServings || 2) * scaleFactor * 10) / 10;
+
+            const handleServingChange = (e) => {
+                const val = parseFloat(e.target.value);
+                if (val > 0) {
+                    const base = recipe.baseServings || 2;
+                    setScaleFactor(val / base);
+                }
+            };
+
+            const handleIngredientAmountChange = (baseAmount, newVal) => {
+                if (baseAmount && newVal > 0) {
+                    setScaleFactor(newVal / baseAmount);
+                }
+            };
+
+            const toggleExpand = () => setIsExpanded(!isExpanded);
+
+            return (
+                <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden card-hover transition-all duration-300 fade-in flex flex-col relative h-fit">
+                    <div className="h-1 w-full bg-indigo-500"></div>
+                    
+                    <div className="h-48 overflow-hidden relative group cursor-pointer" onClick={toggleExpand}>
+                        <img src={recipe.image} alt={recipe.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300" />
+                        <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold text-slate-700 shadow-sm">
+                            #{recipe.id.toString().slice(-4)}
+                        </div>
+                        <div className="absolute bottom-2 right-2 bg-indigo-600/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-bold shadow-md flex items-center gap-1">
+                             <IconCalculator className="w-3 h-3" />
+                             {isExpanded ? "計算中" : "分量計算"}
+                        </div>
+                    </div>
+
+                    <div className="p-5 flex flex-col">
+                        <div className="flex justify-between items-start mb-2">
+                            <h3 className="text-xl font-bold text-slate-800 line-clamp-2 font-brand cursor-pointer hover:text-indigo-600 transition-colors" onClick={toggleExpand}>
+                                {recipe.title}
+                            </h3>
+                            <button onClick={toggleExpand} className="text-slate-400 hover:text-indigo-500 p-1">
+                                {isExpanded ? <IconChevronUp className="w-5 h-5"/> : <IconChevronDown className="w-5 h-5"/>}
+                            </button>
+                        </div>
+                        
+                        {!isExpanded ? (
+                            <div className="flex items-center gap-2 text-sm text-slate-500 mb-4">
+                                <span className="bg-slate-100 border border-slate-200 px-2 py-1 rounded text-xs font-medium flex items-center gap-1">
+                                    <IconUsers className="w-3 h-3" /> {recipe.baseServings}人分
+                                </span>
+                                <span className="bg-slate-100 border border-slate-200 px-2 py-1 rounded text-xs font-medium">
+                                    {recipe.ingredients.length} 材料
+                                </span>
+                            </div>
+                        ) : (
+                            <div className="mb-4 fade-in">
+                                <div className="bg-indigo-50 rounded-lg p-3 mb-4 border border-indigo-100">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <label className="text-xs font-bold text-indigo-800 uppercase tracking-wide flex items-center gap-1">
+                                            <IconCalculator className="w-3 h-3" /> Smart Scaling
+                                        </label>
+                                        <button 
+                                            onClick={() => setScaleFactor(1)}
+                                            className="text-[10px] bg-white border border-indigo-200 text-indigo-600 px-2 py-0.5 rounded hover:bg-indigo-50 transition-colors"
+                                        >
+                                            リセット
+                                        </button>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="flex-1">
+                                            <div className="relative">
+                                                <input 
+                                                    type="number" 
+                                                    value={currentServings}
+                                                    onChange={handleServingChange}
+                                                    step="0.5"
+                                                    min="0.5"
+                                                    className="w-full pl-8 pr-2 py-1.5 rounded bg-white border border-indigo-200 text-indigo-900 font-bold focus:ring-2 focus:ring-indigo-300 outline-none text-center"
+                                                />
+                                                <IconUsers className="w-4 h-4 text-indigo-400 absolute left-2 top-1/2 -translate-y-1/2" />
+                                            </div>
+                                            <div className="text-[10px] text-center text-indigo-500 mt-1 font-bold">人分を作る</div>
+                                        </div>
+                                    </div>
+                                    <p className="text-[10px] text-indigo-400 mt-2 text-center leading-tight">
+                                        下の材料の数値を変更しても<br/>全体が自動計算されます
+                                    </p>
+                                </div>
+
+                                <div className="space-y-1 max-h-60 overflow-y-auto pr-1 custom-scrollbar">
+                                    {recipe.ingredients.map((ing, idx) => {
+                                        const isNumber = ing.amount && !isNaN(parseFloat(ing.amount));
+                                        const calculatedAmount = isNumber 
+                                            ? Math.round(parseFloat(ing.amount) * scaleFactor * 100) / 100 
+                                            : ing.amount;
+
+                                        return (
+                                            <div key={idx} className="flex items-center justify-between text-sm py-1 border-b border-slate-50 last:border-0 hover:bg-slate-50 rounded px-1 transition-colors group/row">
+                                                <span className="text-slate-700 font-medium truncate flex-1">{ing.name}</span>
+                                                <div className="flex items-center gap-1">
+                                                    {isNumber ? (
+                                                        <input 
+                                                            type="number"
+                                                            value={calculatedAmount}
+                                                            onChange={(e) => handleIngredientAmountChange(ing.amount, e.target.value)}
+                                                            className="w-16 text-right font-bold text-slate-800 bg-transparent border-b border-transparent hover:border-slate-300 focus:border-indigo-500 focus:bg-white outline-none transition-all py-0.5 px-1 rounded text-sm"
+                                                        />
+                                                    ) : (
+                                                        <span className="text-slate-500 text-xs">{ing.amount}</span>
+                                                    )}
+                                                    <span className="text-slate-400 text-xs w-8 text-left">{ing.unit}</span>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="mt-auto pt-4 flex items-center justify-between border-t border-slate-100">
+                             <a 
+                                href={recipe.url} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="text-slate-400 hover:text-indigo-500 transition-colors flex items-center gap-1 text-xs"
+                                title="元のサイトを開く"
+                            >
+                                <IconExternalLink className="w-4 h-4" /> Source
+                            </a>
+                            <div className="flex gap-2">
+                                <button 
+                                    onClick={() => onEdit(recipe)}
+                                    className="p-2 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors"
+                                >
+                                    <IconEdit className="w-5 h-5" />
+                                </button>
+                                <button 
+                                    onClick={() => onDelete(recipe.id)}
+                                    className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
+                                >
+                                    <IconTrash className="w-5 h-5" />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const RecipeEditor = ({ initialData, onSave, onCancel }) => {
+            const [formData, setFormData] = useState(initialData || {
+                title: "",
+                url: "",
+                image: "https://images.unsplash.com/photo-1495521841625-f462cd2f24d5?w=500&auto=format&fit=crop&q=60",
+                ingredients: [{ name: "", amount: "", unit: "" }],
+                steps: [""],
+                baseServings: 2,
+                notes: ""
+            });
+
+            useEffect(() => {
+                if (initialData && initialData.ingredients && typeof initialData.ingredients[0] === 'string') {
+                    setFormData(migrateRecipe(initialData));
+                }
+            }, [initialData]);
+
+            const handleChange = (field, value) => {
+                setFormData({ ...formData, [field]: value });
+            };
+
+            const handleIngredientChange = (index, field, value) => {
+                const newIngredients = [...formData.ingredients];
+                newIngredients[index] = { ...newIngredients[index], [field]: value };
+                setFormData({ ...formData, ingredients: newIngredients });
+            };
+
+            const handleStepChange = (index, value) => {
+                const newSteps = [...formData.steps];
+                newSteps[index] = value;
+                setFormData({ ...formData, steps: newSteps });
+            };
+
+            const addIngredient = () => {
+                setFormData({ ...formData, ingredients: [...formData.ingredients, { name: "", amount: "", unit: "" }] });
+            };
+
+            const removeIngredient = (index) => {
+                setFormData({ ...formData, ingredients: formData.ingredients.filter((_, i) => i !== index) });
+            };
+
+            const addStep = () => {
+                setFormData({ ...formData, steps: [...formData.steps, ""] });
+            };
+
+            const removeStep = (index) => {
+                setFormData({ ...formData, steps: formData.steps.filter((_, i) => i !== index) });
+            };
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                onSave({
+                    ...formData,
+                    id: formData.id || Date.now(),
+                    ingredients: formData.ingredients.filter(i => i.name.trim() !== ""),
+                    steps: formData.steps.filter(s => s.trim() !== "")
+                });
+            };
+
+            return (
+                <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-6 fade-in max-w-3xl mx-auto relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 to-purple-500"></div>
+                    <h2 className="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2 font-brand">
+                        <IconEdit className="text-indigo-500" />
+                        Edit Card
+                    </h2>
+                    
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">料理名</label>
+                                    <input 
+                                        type="text" 
+                                        required
+                                        className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 outline-none transition-all"
+                                        value={formData.title}
+                                        onChange={(e) => handleChange("title", e.target.value)}
+                                        placeholder="例：絶品ハンバーグ"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">基準の人数</label>
+                                    <div className="relative">
+                                        <input 
+                                            type="number" 
+                                            min="1"
+                                            className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 outline-none transition-all pl-10"
+                                            value={formData.baseServings}
+                                            onChange={(e) => handleChange("baseServings", e.target.value === "" ? "" : parseFloat(e.target.value))}
+                                        />
+                                        <IconUsers className="w-5 h-5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm">人分</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">参考URL</label>
+                                    <input 
+                                        type="url" 
+                                        className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 outline-none transition-all text-sm text-slate-600"
+                                        value={formData.url}
+                                        onChange={(e) => handleChange("url", e.target.value)}
+                                        placeholder="https://..."
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">画像URL</label>
+                                <div className="relative mb-2">
+                                    <input 
+                                        type="text" 
+                                        className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 outline-none transition-all text-sm"
+                                        value={formData.image}
+                                        onChange={(e) => handleChange("image", e.target.value)}
+                                        placeholder="https://..."
+                                    />
+                                </div>
+                                <div className="h-32 w-full rounded-lg overflow-hidden bg-slate-100 border border-slate-200">
+                                    <img 
+                                        src={formData.image || "https://placehold.co/600x400?text=No+Image"} 
+                                        alt="Preview" 
+                                        className="w-full h-full object-cover"
+                                        onError={(e) => e.target.src = "https://placehold.co/600x400?text=No+Image"}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div className="flex justify-between items-center mb-2">
+                                <label className="text-lg font-bold text-slate-700 font-brand">Ingredients</label>
+                                <button type="button" onClick={addIngredient} className="text-sm text-indigo-600 hover:text-indigo-700 font-medium flex items-center gap-1">
+                                    <IconPlus className="w-4 h-4" /> 追加
+                                </button>
+                            </div>
+                            <div className="space-y-2 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                <div className="grid grid-cols-12 gap-2 text-xs font-bold text-slate-400 mb-1 px-1">
+                                    <div className="col-span-6">材料名</div>
+                                    <div className="col-span-3">分量 (数値)</div>
+                                    <div className="col-span-2">単位</div>
+                                </div>
+                                {formData.ingredients.map((ing, idx) => (
+                                    <div key={idx} className="grid grid-cols-12 gap-2 items-center">
+                                        <div className="col-span-6">
+                                            <input 
+                                                type="text"
+                                                className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:border-indigo-500 outline-none text-sm"
+                                                value={ing.name}
+                                                onChange={(e) => handleIngredientChange(idx, "name", e.target.value)}
+                                                placeholder="材料名"
+                                            />
+                                        </div>
+                                        <div className="col-span-3">
+                                            <input 
+                                                type="number"
+                                                className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:border-indigo-500 outline-none text-sm"
+                                                value={ing.amount}
+                                                onChange={(e) => handleIngredientChange(idx, "amount", e.target.value)}
+                                                placeholder="例: 200"
+                                            />
+                                        </div>
+                                        <div className="col-span-2">
+                                            <input 
+                                                type="text"
+                                                className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:border-indigo-500 outline-none text-sm"
+                                                value={ing.unit}
+                                                onChange={(e) => handleIngredientChange(idx, "unit", e.target.value)}
+                                                placeholder="g/個"
+                                            />
+                                        </div>
+                                        <div className="col-span-1 flex justify-end">
+                                            <button type="button" onClick={() => removeIngredient(idx)} className="text-slate-400 hover:text-red-500 p-1">
+                                                <IconTrash className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div>
+                            <div className="flex justify-between items-center mb-2">
+                                <label className="text-lg font-bold text-slate-700 font-brand">Directions</label>
+                                <button type="button" onClick={addStep} className="text-sm text-indigo-600 hover:text-indigo-700 font-medium flex items-center gap-1">
+                                    <IconPlus className="w-4 h-4" /> 追加
+                                </button>
+                            </div>
+                            <div className="space-y-2">
+                                {formData.steps.map((step, idx) => (
+                                    <div key={idx} className="flex gap-2 items-start">
+                                        <span className="mt-2 text-xs font-bold text-slate-400 w-6 text-center">{idx + 1}</span>
+                                        <textarea 
+                                            className="flex-1 px-3 py-2 rounded-lg border border-slate-300 focus:border-indigo-500 outline-none text-sm min-h-[60px]"
+                                            value={step}
+                                            onChange={(e) => handleStepChange(idx, e.target.value)}
+                                            placeholder="工程を入力..."
+                                        />
+                                        <button type="button" onClick={() => removeStep(idx)} className="text-slate-400 hover:text-red-500 mt-2">
+                                            <IconTrash className="w-5 h-5" />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        
+                        <div className="flex gap-4 pt-6 border-t border-slate-100">
+                            <button 
+                                type="button" 
+                                onClick={onCancel}
+                                className="flex-1 py-3 px-4 rounded-lg border border-slate-300 text-slate-600 hover:bg-slate-50 font-bold transition-colors"
+                            >
+                                キャンセル
+                            </button>
+                            <button 
+                                type="submit" 
+                                className="flex-1 py-3 px-4 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 shadow-md hover:shadow-lg font-bold transition-all flex justify-center items-center gap-2"
+                            >
+                                <IconSave className="w-5 h-5" />
+                                デッキに保存
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            );
+        };
+
+        // --- Main Application ---
+
+        const App = () => {
+            const [recipes, setRecipes] = useState([]);
+            const [view, setView] = useState("list");
+            const [editingRecipe, setEditingRecipe] = useState(null);
+            const [importUrl, setImportUrl] = useState("");
+            const [isLoading, setIsLoading] = useState(false);
+            const [notification, setNotification] = useState(null);
+
+            useEffect(() => {
+                const newKey = "chefsDeckRecipes";
+                const oldKey = "oreNoRecipes";
+                
+                const saved = localStorage.getItem(newKey);
+                const oldSaved = localStorage.getItem(oldKey);
+
+                let loadedData = [];
+
+                if (saved) {
+                    try {
+                        loadedData = JSON.parse(saved);
+                    } catch (e) {
+                        console.error("Failed to load recipes", e);
+                    }
+                } else if (oldSaved) {
+                    try {
+                        loadedData = JSON.parse(oldSaved);
+                        showNotification("旧データを移行しました");
+                    } catch (e) {}
+                } else {
+                    loadedData = [{
+                        id: 1,
+                        title: "Chef's Special Curry",
+                        url: "https://example.com",
+                        image: "https://images.unsplash.com/photo-1604152135912-04a022e23696?w=500&auto=format&fit=crop&q=60",
+                        ingredients: [
+                            {name: "豚肉", amount: 200, unit: "g"}, 
+                            {name: "玉ねぎ", amount: 2, unit: "個"},
+                            {name: "人参", amount: 1, unit: "本"},
+                            {name: "カレールー", amount: 0.5, unit: "箱"}
+                        ],
+                        steps: ["具材をすべてみじん切りにする。", "中華鍋を煙が出るまで熱し、油を馴染ませる。", "溶き卵を入れて半熟のうちにご飯を投入。", "切るように炒め、具材を投入。", "鍋肌から醤油を入れて香りを立たせたら完成。"],
+                        baseServings: 2,
+                        notes: "スターターデッキの1枚"
+                    }];
+                }
+
+                const migratedData = loadedData.map(migrateRecipe);
+                setRecipes(migratedData);
+            }, []);
+
+            useEffect(() => {
+                if (recipes.length > 0) {
+                    localStorage.setItem("chefsDeckRecipes", JSON.stringify(recipes));
+                }
+            }, [recipes]);
+
+            const showNotification = (msg) => {
+                setNotification(msg);
+                setTimeout(() => setNotification(null), 3000);
+            };
+
+            const handleImport = async (e) => {
+                e.preventDefault();
+                if (!importUrl) return;
+
+                setIsLoading(true);
+                try {
+                    const mockData = await simulateScraping(importUrl);
+                    setEditingRecipe(mockData);
+                    setView("edit");
+                    setImportUrl("");
+                    showNotification("カードデータを生成中...");
+                } catch (err) {
+                    showNotification("取り込みに失敗しました");
+                } finally {
+                    setIsLoading(false);
+                }
+            };
+
+            const handleSave = (recipe) => {
+                if (recipes.some(r => r.id === recipe.id)) {
+                    setRecipes(recipes.map(r => r.id === recipe.id ? recipe : r));
+                    showNotification("カード情報を更新しました");
+                } else {
+                    setRecipes([recipe, ...recipes]);
+                    showNotification("新しいカードをデッキに追加しました！");
+                }
+                setView("list");
+                setEditingRecipe(null);
+            };
+
+            const handleDelete = (id) => {
+                if (window.confirm("このカードをデッキから破棄しますか？")) {
+                    setRecipes(recipes.filter(r => r.id !== id));
+                    showNotification("カードを破棄しました");
+                }
+            };
+
+            const handleEdit = (recipe) => {
+                setEditingRecipe(recipe);
+                setView("edit");
+            };
+
+            const handleCreateNew = () => {
+                setEditingRecipe(null);
+                setView("edit");
+            };
+
+            return (
+                <div className="min-h-screen pb-10 font-sans text-slate-600">
+                    <header className="bg-white border-b border-slate-200 sticky top-0 z-10 shadow-sm">
+                        <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+                            <div className="flex items-center gap-2 cursor-pointer group" onClick={() => setView("list")}>
+                                <div className="bg-indigo-600 text-white p-2 rounded-lg group-hover:bg-indigo-700 transition-colors">
+                                    <IconLayers className="w-6 h-6" />
+                                </div>
+                                <div className="flex flex-col">
+                                    <h1 className="text-xl font-bold text-slate-800 tracking-tight leading-none">Chef's Deck</h1>
+                                    <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest leading-none mt-1">Recipe Collection</span>
+                                </div>
+                            </div>
+                            
+                            {view === "list" && (
+                                <button 
+                                    onClick={handleCreateNew}
+                                    className="bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-slate-700 transition-colors flex items-center gap-2 shadow-sm"
+                                >
+                                    <IconPlus className="w-4 h-4" />
+                                    <span className="hidden sm:inline">Add Card</span>
+                                </button>
+                            )}
+                        </div>
+                    </header>
+
+                    {notification && (
+                        <div className="fixed top-20 right-4 bg-slate-800 text-white px-6 py-3 rounded-lg shadow-xl z-50 fade-in flex items-center gap-2">
+                            <div className="w-2 h-2 bg-indigo-400 rounded-full"></div>
+                            {notification}
+                        </div>
+                    )}
+
+                    <main className="max-w-5xl mx-auto px-4 mt-8">
+                        
+                        {view === "list" && (
+                            <div className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl p-6 md:p-10 mb-10 shadow-lg text-white relative overflow-hidden">
+                                <div className="absolute top-0 right-0 opacity-10 transform translate-x-10 -translate-y-10">
+                                    <IconLayers className="w-64 h-64" />
+                                </div>
+                                
+                                <div className="relative z-10 max-w-2xl">
+                                    <h2 className="text-2xl md:text-3xl font-bold mb-2 font-brand">Build Your Deck.</h2>
+                                    <p className="mb-6 text-indigo-100">
+                                        Web上のレシピをカード化して、あなただけの最強デッキ（レシピ集）を構築しよう。<br className="hidden md:inline"/>
+                                        人数や手持ちの材料に合わせて、分量を自動計算します。
+                                    </p>
+                                    
+                                    <form onSubmit={handleImport} className="flex flex-col sm:flex-row gap-3">
+                                        <div className="flex-1 relative text-slate-800">
+                                            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                                                <IconSearch className="w-5 h-5" />
+                                            </div>
+                                            <input 
+                                                type="url" 
+                                                className="w-full pl-10 pr-4 py-3 rounded-xl border-0 focus:ring-4 focus:ring-indigo-300 outline-none shadow-sm font-medium"
+                                                placeholder="Paste recipe URL here..."
+                                                value={importUrl}
+                                                onChange={(e) => setImportUrl(e.target.value)}
+                                            />
+                                        </div>
+                                        <button 
+                                            type="submit" 
+                                            disabled={isLoading}
+                                            className="bg-white text-indigo-600 font-bold py-3 px-6 rounded-xl hover:bg-indigo-50 transition-colors shadow-sm disabled:opacity-70 flex items-center justify-center gap-2 min-w-[140px]"
+                                        >
+                                            {isLoading ? <IconLoader className="w-5 h-5 animate-spin" /> : "カード化"}
+                                        </button>
+                                    </form>
+                                    <p className="text-xs mt-3 text-indigo-200 opacity-70">
+                                        ※「curry」や「pasta」でサンプル生成。
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+
+                        {view === "list" ? (
+                            <div>
+                                <div className="flex items-center justify-between mb-6">
+                                    <h3 className="text-lg font-bold text-slate-700 flex items-center gap-2">
+                                        <IconLayers className="w-5 h-5 text-indigo-500" />
+                                        Your Deck
+                                        <span className="bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full text-xs">{recipes.length}</span>
+                                    </h3>
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {recipes.length === 0 ? (
+                                        <div className="col-span-full text-center py-20 text-slate-400 bg-white rounded-2xl border border-dashed border-slate-300">
+                                            <IconLayers className="w-16 h-16 mx-auto mb-4 opacity-20" />
+                                            <p>デッキが空です。<br/>URLを取り込んで最初のカードを追加しましょう。</p>
+                                        </div>
+                                    ) : (
+                                        recipes.map(recipe => (
+                                            <RecipeCard 
+                                                key={recipe.id} 
+                                                recipe={recipe} 
+                                                onDelete={handleDelete}
+                                                onEdit={handleEdit}
+                                            />
+                                        ))
+                                    )}
+                                </div>
+                            </div>
+                        ) : (
+                            <RecipeEditor 
+                                initialData={editingRecipe} 
+                                onSave={handleSave}
+                                onCancel={() => setView("list")}
+                            />
+                        )}
+
+                    </main>
+                </div>
+            );
+        };
+
+        // Initialize App
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
 </body>
 </html>
 
