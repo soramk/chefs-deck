@@ -49,7 +49,35 @@ Gemini APIを使用する場合は、GitHub SecretsにAPIキーを設定する�
 
 **注意**: Gemini APIキーはオプションです。通常のスクレイピングプロトコル（JSON-LD、Cookpad形式など）で抽出できる場合は、Gemini APIは不要です。複雑なレイアウトや、通常のプロトコルで抽出できない場合のみ使用してください。
 
-### 4. GitHub Pagesの設定
+### 4. GitHub Personal Access Tokenの設定（自動実行機能を使用する場合）
+
+フロントエンドから直接GitHub Actionsを実行するには、GitHub Personal Access Tokenが必要です。
+
+#### 手順：
+
+1. **Personal Access Tokenの生成**
+   - GitHubにログイン
+   - 右上のプロフィール画像をクリック > 「Settings」
+   - 左メニューから「Developer settings」を選択
+   - 「Personal access tokens」>「Tokens (classic)」を選択
+   - 「Generate new token」>「Generate new token (classic)」をクリック
+   - Note: `Chef's Deck Workflow` など適当な名前を入力
+   - Expiration: 有効期限を設定（推奨: 90日またはNo expiration）
+   - Scopes: `workflow` にチェックを入れる
+   - 「Generate token」をクリック
+   - **重要**: 表示されたトークンをコピー（後で表示できません）
+
+2. **トークンの入力**
+   - アプリで初めてレシピを追加する際、トークンの入力を求められます
+   - コピーしたトークンを貼り付け
+   - トークンはブラウザのlocalStorageに保存されます（セキュリティに注意）
+
+**注意**: 
+- トークンはブラウザのlocalStorageに保存されます
+- トークンを削除したい場合は、ブラウザの開発者ツールから `localStorage.removeItem('GITHUB_TOKEN')` を実行
+- トークンが不要な場合は、手動でGitHub Actionsページから実行することも可能です
+
+### 5. GitHub Pagesの設定
 
 1. リポジトリのSettings > Pages
 2. Sourceを`main`ブランチの`/root`に設定
@@ -59,9 +87,20 @@ Gemini APIを使用する場合は、GitHub SecretsにAPIキーを設定する�
 
 ### レシピの追加
 
+#### 自動実行（推奨）
+
 1. アプリのURL入力欄にレシピのURLを入力
 2. 必要に応じて「Gemini APIを使用」にチェック
 3. 「カード化」ボタンをクリック
+4. 初回のみ、GitHub Personal Access Tokenの入力を求められます
+5. ワークフローが自動的に実行されます
+6. 約60秒後に自動的にレシピが表示されます
+
+#### 手動実行
+
+1. アプリのURL入力欄にレシピのURLを入力
+2. 「カード化」ボタンをクリック
+3. トークン入力画面で「キャンセル」を選択
 4. GitHub Actionsページが開くので、手動でワークフローを実行
    - URLを入力
    - Gemini API使用オプションを選択

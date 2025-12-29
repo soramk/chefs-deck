@@ -632,7 +632,7 @@
 
                 setIsLoading(true);
                 try {
-                    // GitHub Actionsのワークフロー実行URLを生成
+                    // GitHubリポジトリ情報を取得
                     let repoOwner = '';
                     let repoName = '';
                     
@@ -653,24 +653,97 @@
                         return;
                     }
                     
-                    const workflowUrl = `https://github.com/${repoOwner}/${repoName}/actions/workflows/scrape-recipe.yml`;
+                    // GitHub ActionsのREST APIを使用してワークフローを直接実行
+                    const workflowId = 'scrape-recipe.yml';
+                    const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/actions/workflows/${workflowId}/dispatches`;
                     
-                    // 新しいタブでワークフロー実行ページを開く
-                    const newWindow = window.open(workflowUrl, '_blank');
+                    // デフォルトブランチを取得（通常は 'main' または 'master'）
+                    let defaultBranch = 'main';
                     
-                    if (!newWindow) {
-                        showNotification("ポップアップがブロックされました。手動でGitHub Actionsページを開いてください: " + workflowUrl);
-                    } else {
-                        showNotification("GitHub Actionsページを開きました。手動でワークフローを実行し、URLとGeminiオプションを入力してください。");
+                    // GitHub Personal Access Tokenを取得（localStorageから）
+                    const githubToken = localStorage.getItem('GITHUB_TOKEN');
+                    
+                    if (!githubToken) {
+                        // トークンが設定されていない場合、手動実行ページを開く
+                        const workflowUrl = `https://github.com/${repoOwner}/${repoName}/actions/workflows/${workflowId}`;
+                        const token = prompt(
+                            'GitHub Personal Access Tokenを入力してください（初回のみ）:\n\n' +
+                            'トークンを取得するには:\n' +
+                            '1. GitHub > Settings > Developer settings > Personal access tokens\n' +
+                            '2. "Generate new token" をクリック\n' +
+                            '3. "workflow" スコープを選択\n' +
+                            '4. トークンをコピーしてここに貼り付け\n\n' +
+                            '（トークンを入力しない場合は、手動実行ページを開きます）'
+                        );
+                        
+                        if (token && token.trim()) {
+                            localStorage.setItem('GITHUB_TOKEN', token);
+                            // 再試行
+                            return handleImport(e);
+                        } else {
+                            window.open(workflowUrl, '_blank');
+                            showNotification("GitHub Actionsページを開きました。手動でワークフローを実行してください。");
+                            setIsLoading(false);
+                            return;
+                        }
                     }
                     
-                    setImportUrl("");
+                    // デフォルトブランチを取得
+                    try {
+                        const repoResponse = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}`, {
+                            headers: {
+                                'Accept': 'application/vnd.github+json',
+                                'Authorization': `Bearer ${githubToken}`,
+                                'X-GitHub-Api-Version': '2022-11-28'
+                            }
+                        });
+                        if (repoResponse.ok) {
+                            const repoData = await repoResponse.json();
+                            defaultBranch = repoData.default_branch || 'main';
+                        }
+                    } catch (err) {
+                        console.warn('Failed to get default branch, using main:', err);
+                    }
                     
-                    // 60秒後にレシピを再読み込み（ワークフロー完了を待つ）
-                    setTimeout(() => {
-                        loadRecipes();
-                        showNotification("レシピを再読み込みしました");
-                    }, 60000);
+                    // ワークフローを実行
+                    showNotification("GitHub Actionsでスクレイピングを開始しています...");
+                    
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/vnd.github+json',
+                            'Authorization': `Bearer ${githubToken}`,
+                            'X-GitHub-Api-Version': '2022-11-28',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            ref: defaultBranch,
+                            inputs: {
+                                url: importUrl,
+                                use_gemini: useGemini ? 'true' : 'false'
+                            }
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        showNotification("スクレイピングを開始しました。完了までお待ちください...");
+                        setImportUrl("");
+                        
+                        // 60秒後にレシピを再読み込み（ワークフロー完了を待つ）
+                        setTimeout(() => {
+                            loadRecipes();
+                            showNotification("レシピを再読み込みしました");
+                        }, 60000);
+                    } else {
+                        const errorData = await response.json().catch(() => ({}));
+                        if (response.status === 401 || response.status === 403) {
+                            // 認証エラーの場合、トークンを削除して再入力を促す
+                            localStorage.removeItem('GITHUB_TOKEN');
+                            showNotification("認証エラーです。トークンを再設定してください。");
+                        } else {
+                            throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+                        }
+                    }
                     
                 } catch (err) {
                     console.error("Import error:", err);
