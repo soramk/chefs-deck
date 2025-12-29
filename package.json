@@ -1,0 +1,22 @@
+{
+  "name": "chefs-deck",
+  "version": "1.0.0",
+  "description": "Recipe collection with web scraping",
+  "main": "index.html",
+  "scripts": {
+    "scrape": "node scripts/scrape-recipe.js"
+  },
+  "keywords": [
+    "recipe",
+    "scraping",
+    "cooking"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "cheerio": "^1.0.0",
+    "axios": "^1.6.0",
+    "@google/generative-ai": "^0.2.0"
+  }
+}
+

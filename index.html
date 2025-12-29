@@ -140,63 +140,6 @@
             </svg>
         );
 
-        // --- Mock Data Generator (Updated Structure) ---
-        const simulateScraping = (url) => {
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    let title = "Webから収集した美味しいレシピ";
-                    let ingredients = [
-                        { name: "玉ねぎ", amount: 1, unit: "個" },
-                        { name: "人参", amount: 1, unit: "本" },
-                        { name: "オリーブオイル", amount: "", unit: "適量" },
-                        { name: "塩コショウ", amount: "", unit: "少々" }
-                    ];
-                    let steps = ["野菜を切ります。", "フライパンで炒めます。", "火が通ったら完成です。"];
-                    let image = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&auto=format&fit=crop&q=60";
-                    let baseServings = 2;
-
-                    if (url.includes("curry") || url.includes("カレー")) {
-                        title = "隠し味が決め手の特製カレー";
-                        ingredients = [
-                            { name: "豚肉", amount: 200, unit: "g" },
-                            { name: "玉ねぎ", amount: 2, unit: "個" },
-                            { name: "人参", amount: 1, unit: "本" },
-                            { name: "じゃがいも", amount: 2, unit: "個" },
-                            { name: "カレールー", amount: 0.5, unit: "箱" },
-                            { name: "チョコレート", amount: 1, unit: "カケ" }
-                        ];
-                        steps = ["野菜を一口大に切る。", "鍋で肉と野菜をよく炒める。", "水を加えて20分煮込む。", "火を止めてルーとチョコを溶かす。", "弱火で10分煮込んで完成。"];
-                        image = "https://images.unsplash.com/photo-1604152135912-04a022e23696?w=500&auto=format&fit=crop&q=60";
-                        baseServings = 4;
-                    } else if (url.includes("pasta") || url.includes("パスタ")) {
-                        title = "基本のトマトバジルパスタ";
-                        ingredients = [
-                            { name: "パスタ", amount: 200, unit: "g" },
-                            { name: "トマト缶", amount: 1, unit: "缶" },
-                            { name: "ニンニク", amount: 1, unit: "片" },
-                            { name: "オリーブオイル", amount: 2, unit: "大さじ" },
-                            { name: "バジル", amount: "", unit: "適量" }
-                        ];
-                        steps = ["お湯を沸かしてパスタを茹でる。", "フライパンでニンニクを炒める。", "トマト缶を入れて煮詰める。", "茹で上がったパスタを和える。", "バジルを散らす。"];
-                        image = "https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=500&auto=format&fit=crop&q=60";
-                        baseServings = 2;
-                    }
-
-                    resolve({
-                        id: Date.now(),
-                        title,
-                        url,
-                        image,
-                        ingredients,
-                        steps,
-                        baseServings,
-                        notes: "Webサイトからの収集（シミュレーション）",
-                        createdAt: new Date().toISOString()
-                    });
-                }, 1500);
-            });
-        };
-
         // --- Helper: Data Migration ---
         const migrateRecipe = (recipe) => {
             if (recipe.ingredients && recipe.ingredients.length > 0 && typeof recipe.ingredients[0] === 'string') {
@@ -606,56 +549,52 @@
             const [view, setView] = useState("list");
             const [editingRecipe, setEditingRecipe] = useState(null);
             const [importUrl, setImportUrl] = useState("");
+            const [useGemini, setUseGemini] = useState(false);
             const [isLoading, setIsLoading] = useState(false);
             const [notification, setNotification] = useState(null);
 
-            useEffect(() => {
-                const newKey = "chefsDeckRecipes";
-                const oldKey = "oreNoRecipes";
-                
-                const saved = localStorage.getItem(newKey);
-                const oldSaved = localStorage.getItem(oldKey);
-
-                let loadedData = [];
-
-                if (saved) {
-                    try {
-                        loadedData = JSON.parse(saved);
-                    } catch (e) {
-                        console.error("Failed to load recipes", e);
+            // レシピデータを読み込む
+            const loadRecipes = async () => {
+                try {
+                    // api/recipes.jsonから読み込む
+                    const response = await fetch('api/recipes.json');
+                    if (response.ok) {
+                        const data = await response.json();
+                        const migratedData = data.map(migrateRecipe);
+                        setRecipes(migratedData);
+                    } else {
+                        // フォールバック: localStorageから読み込む
+                        const saved = localStorage.getItem("chefsDeckRecipes");
+                        if (saved) {
+                            const loadedData = JSON.parse(saved);
+                            const migratedData = loadedData.map(migrateRecipe);
+                            setRecipes(migratedData);
+                        }
                     }
-                } else if (oldSaved) {
-                    try {
-                        loadedData = JSON.parse(oldSaved);
-                        showNotification("旧データを移行しました");
-                    } catch (e) {}
-                } else {
-                    loadedData = [{
-                        id: 1,
-                        title: "Chef's Special Curry",
-                        url: "https://example.com",
-                        image: "https://images.unsplash.com/photo-1604152135912-04a022e23696?w=500&auto=format&fit=crop&q=60",
-                        ingredients: [
-                            {name: "豚肉", amount: 200, unit: "g"}, 
-                            {name: "玉ねぎ", amount: 2, unit: "個"},
-                            {name: "人参", amount: 1, unit: "本"},
-                            {name: "カレールー", amount: 0.5, unit: "箱"}
-                        ],
-                        steps: ["具材をすべてみじん切りにする。", "中華鍋を煙が出るまで熱し、油を馴染ませる。", "溶き卵を入れて半熟のうちにご飯を投入。", "切るように炒め、具材を投入。", "鍋肌から醤油を入れて香りを立たせたら完成。"],
-                        baseServings: 2,
-                        notes: "スターターデッキの1枚"
-                    }];
+                } catch (error) {
+                    console.error("Failed to load recipes:", error);
+                    // フォールバック: localStorageから読み込む
+                    const saved = localStorage.getItem("chefsDeckRecipes");
+                    if (saved) {
+                        try {
+                            const loadedData = JSON.parse(saved);
+                            const migratedData = loadedData.map(migrateRecipe);
+                            setRecipes(migratedData);
+                        } catch (e) {
+                            console.error("Failed to load from localStorage:", e);
+                        }
+                    }
                 }
+            };
 
-                const migratedData = loadedData.map(migrateRecipe);
-                setRecipes(migratedData);
+            useEffect(() => {
+                loadRecipes();
+                // 定期的にレシピを再読み込み（30秒ごと）
+                const interval = setInterval(loadRecipes, 30000);
+                return () => clearInterval(interval);
             }, []);
 
-            useEffect(() => {
-                if (recipes.length > 0) {
-                    localStorage.setItem("chefsDeckRecipes", JSON.stringify(recipes));
-                }
-            }, [recipes]);
+            // localStorageへの保存は削除（GitHubで管理）
 
             const showNotification = (msg) => {
                 setNotification(msg);
@@ -668,13 +607,40 @@
 
                 setIsLoading(true);
                 try {
-                    const mockData = await simulateScraping(importUrl);
-                    setEditingRecipe(mockData);
-                    setView("edit");
+                    // GitHub Actionsワークフローをトリガー
+                    // 注意: 実際の実装では、GitHub Personal Access Tokenが必要です
+                    // ここでは、ユーザーにGitHub Actionsの手動実行を促す方法を実装
+                    
+                    showNotification("GitHub Actionsでスクレイピングを開始しました。完了までお待ちください...");
+                    
+                    // GitHub Actionsのワークフロー実行URLを開く
+                    // 実際のリポジトリURLに置き換えてください
+                    const repoOwner = window.location.hostname.includes('github.io') 
+                        ? window.location.pathname.split('/')[1] 
+                        : 'your-username';
+                    const repoName = window.location.hostname.includes('github.io')
+                        ? window.location.pathname.split('/')[2] || 'chefs-deck'
+                        : 'chefs-deck';
+                    
+                    // ワークフロー実行ページへのリンクを表示
+                    const workflowUrl = `https://github.com/${repoOwner}/${repoName}/actions/workflows/scrape-recipe.yml`;
+                    
+                    // 新しいタブでワークフロー実行ページを開く（手動実行用）
+                    window.open(workflowUrl, '_blank');
+                    
+                    // ユーザーに手動実行を促す
+                    showNotification("GitHub Actionsページで手動実行してください。URLとGemini使用オプションを入力してください。");
+                    
                     setImportUrl("");
-                    showNotification("カードデータを生成中...");
+                    
+                    // 30秒後にレシピを再読み込み
+                    setTimeout(() => {
+                        loadRecipes();
+                    }, 30000);
+                    
                 } catch (err) {
-                    showNotification("取り込みに失敗しました");
+                    console.error("Import error:", err);
+                    showNotification("取り込みに失敗しました: " + err.message);
                 } finally {
                     setIsLoading(false);
                 }
@@ -757,29 +723,43 @@
                                         人数や手持ちの材料に合わせて、分量を自動計算します。
                                     </p>
                                     
-                                    <form onSubmit={handleImport} className="flex flex-col sm:flex-row gap-3">
-                                        <div className="flex-1 relative text-slate-800">
-                                            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-                                                <IconSearch className="w-5 h-5" />
+                                    <form onSubmit={handleImport} className="space-y-3">
+                                        <div className="flex flex-col sm:flex-row gap-3">
+                                            <div className="flex-1 relative text-slate-800">
+                                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                                                    <IconSearch className="w-5 h-5" />
+                                                </div>
+                                                <input 
+                                                    type="url" 
+                                                    className="w-full pl-10 pr-4 py-3 rounded-xl border-0 focus:ring-4 focus:ring-indigo-300 outline-none shadow-sm font-medium"
+                                                    placeholder="Paste recipe URL here..."
+                                                    value={importUrl}
+                                                    onChange={(e) => setImportUrl(e.target.value)}
+                                                />
                                             </div>
-                                            <input 
-                                                type="url" 
-                                                className="w-full pl-10 pr-4 py-3 rounded-xl border-0 focus:ring-4 focus:ring-indigo-300 outline-none shadow-sm font-medium"
-                                                placeholder="Paste recipe URL here..."
-                                                value={importUrl}
-                                                onChange={(e) => setImportUrl(e.target.value)}
-                                            />
+                                            <button 
+                                                type="submit" 
+                                                disabled={isLoading}
+                                                className="bg-white text-indigo-600 font-bold py-3 px-6 rounded-xl hover:bg-indigo-50 transition-colors shadow-sm disabled:opacity-70 flex items-center justify-center gap-2 min-w-[140px]"
+                                            >
+                                                {isLoading ? <IconLoader className="w-5 h-5 animate-spin" /> : "カード化"}
+                                            </button>
                                         </div>
-                                        <button 
-                                            type="submit" 
-                                            disabled={isLoading}
-                                            className="bg-white text-indigo-600 font-bold py-3 px-6 rounded-xl hover:bg-indigo-50 transition-colors shadow-sm disabled:opacity-70 flex items-center justify-center gap-2 min-w-[140px]"
-                                        >
-                                            {isLoading ? <IconLoader className="w-5 h-5 animate-spin" /> : "カード化"}
-                                        </button>
+                                        <div className="flex items-center gap-2 text-white">
+                                            <input 
+                                                type="checkbox" 
+                                                id="useGemini"
+                                                checked={useGemini}
+                                                onChange={(e) => setUseGemini(e.target.checked)}
+                                                className="w-4 h-4 rounded border-white/30 bg-white/10 checked:bg-indigo-500 focus:ring-2 focus:ring-indigo-300"
+                                            />
+                                            <label htmlFor="useGemini" className="text-sm cursor-pointer">
+                                                Gemini APIを使用して抽出（複雑なレイアウトに対応）
+                                            </label>
+                                        </div>
                                     </form>
                                     <p className="text-xs mt-3 text-indigo-200 opacity-70">
-                                        ※「curry」や「pasta」でサンプル生成。
+                                        ※GitHub Actionsページで手動実行してください。URLとオプションを入力して実行します。
                                     </p>
                                 </div>
                             </div>

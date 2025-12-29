@@ -1,0 +1,54 @@
+name: Scrape Recipe
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: 'Recipe URL to scrape'
+        required: true
+        type: string
+      use_gemini:
+        description: 'Use Gemini API for extraction'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          npm install
+
+      - name: Run scraping script
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          RECIPE_URL: ${{ github.event.inputs.url }}
+          USE_GEMINI: ${{ github.event.inputs.use_gemini }}
+        run: |
+          node scripts/scrape-recipe.js "$RECIPE_URL" "$USE_GEMINI"
+
+      - name: Generate recipes.json
+        run: |
+          node api/recipes.json.js
+
+      - name: Commit and push recipe data
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add data/ api/
+          git diff --staged --quiet || git commit -m "Add recipe: ${{ github.event.inputs.url }}"
+          git push
+
