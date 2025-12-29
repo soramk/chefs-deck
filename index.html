@@ -699,6 +699,31 @@
                         console.warn('Failed to get default branch, using main:', err);
                     }
                     
+                    // CORSの問題を回避するため、GitHub Actionsページを開いて手動実行を促す
+                    // ブラウザから直接GitHub APIを呼び出すとCORSエラーが発生する可能性があるため
+                    const workflowUrl = `https://github.com/${repoOwner}/${repoName}/actions/workflows/scrape-recipe.yml`;
+                    
+                    // URLパラメータで入力値を渡す（GitHub ActionsはURLパラメータをサポートしていないため、
+                    // 手動実行ページを開いて、ユーザーに入力してもらう）
+                    window.open(workflowUrl, '_blank');
+                    
+                    showNotification(
+                        `GitHub Actionsページを開きました。\n` +
+                        `「Run workflow」をクリックして、以下の値を入力してください：\n` +
+                        `URL: ${importUrl}\n` +
+                        `Use Gemini: ${useGemini ? 'true' : 'false'}`
+                    );
+                    
+                    setImportUrl("");
+                    
+                    // 60秒後にレシピを再読み込み（ワークフロー完了を待つ）
+                    setTimeout(() => {
+                        loadRecipes();
+                        showNotification("レシピを再読み込みしました");
+                    }, 60000);
+                    
+                    // 以下はCORSエラーのためコメントアウト
+                    /*
                     // ワークフローIDを取得（ファイル名からワークフローIDを検索）
                     showNotification("ワークフローを検索しています...");
                     let workflowId = null;
@@ -788,10 +813,22 @@
                             throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
                         }
                     }
+                    */
                     
                 } catch (err) {
                     console.error("Import error:", err);
-                    showNotification("エラーが発生しました: " + err.message);
+                    // CORSエラーの場合、より分かりやすいメッセージを表示
+                    if (err.message.includes('Failed to fetch') || err.name === 'TypeError') {
+                        const workflowUrl = `https://github.com/${repoOwner || 'your-username'}/${repoName || 'chefs-deck'}/actions/workflows/scrape-recipe.yml`;
+                        showNotification(
+                            `CORSエラーのため、GitHub Actionsページを手動で開いてください。\n` +
+                            `URL: ${workflowUrl}\n` +
+                            `入力値: URL=${importUrl}, Gemini=${useGemini ? 'true' : 'false'}`
+                        );
+                        window.open(workflowUrl, '_blank');
+                    } else {
+                        showNotification("エラーが発生しました: " + err.message);
+                    }
                 } finally {
                     setIsLoading(false);
                 }
