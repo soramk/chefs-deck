@@ -161,7 +161,6 @@ async function extractWithGemini(html, url) {
     }
     
     const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
     
     // HTMLからテキストを抽出（簡易版）
     const $ = cheerio.load(html);
@@ -185,13 +184,17 @@ ${text}
   "baseServings": 2
 }`;
 
+    // gemini-3-flash-previewモデルを使用
+    const modelName = 'gemini-3-flash-preview';
+    const model = genAI.getGenerativeModel({ model: modelName });
+    
     try {
         const result = await model.generateContent(prompt);
         const response = await result.response;
-        const text = response.text();
+        const responseText = response.text();
         
         // JSONを抽出
-        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        const jsonMatch = responseText.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
             return JSON.parse(jsonMatch[0]);
         }

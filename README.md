@@ -26,11 +26,28 @@ cd chefs-deck
 npm install
 ```
 
-### 3. GitHub Secretsの設定
+### 3. GitHub Secretsの設定（Gemini APIを使用する場合）
 
-GitHubリポジトリのSettings > Secrets and variables > Actionsで以下を設定：
+Gemini APIを使用する場合は、GitHub SecretsにAPIキーを設定する必要があります。
 
-- `GEMINI_API_KEY`: Gemini APIのキー（オプション、Gemini APIを使用する場合）
+#### 手順：
+
+1. **Gemini APIキーの取得**
+   - [Google AI Studio](https://makersuite.google.com/app/apikey)にアクセス
+   - Googleアカウントでログイン
+   - 「Create API Key」をクリックしてAPIキーを生成
+   - 生成されたAPIキーをコピー
+
+2. **GitHub Secretsへの設定**
+   - GitHubリポジトリのページに移動
+   - 「Settings」タブをクリック
+   - 左メニューから「Secrets and variables」>「Actions」を選択
+   - 「New repository secret」をクリック
+   - Name: `GEMINI_API_KEY`
+   - Secret: コピーしたAPIキーを貼り付け
+   - 「Add secret」をクリック
+
+**注意**: Gemini APIキーはオプションです。通常のスクレイピングプロトコル（JSON-LD、Cookpad形式など）で抽出できる場合は、Gemini APIは不要です。複雑なレイアウトや、通常のプロトコルで抽出できない場合のみ使用してください。
 
 ### 4. GitHub Pagesの設定
 
