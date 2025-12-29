@@ -653,19 +653,12 @@
                         return;
                     }
                     
-                    // GitHub ActionsのREST APIを使用してワークフローを直接実行
-                    const workflowId = 'scrape-recipe.yml';
-                    const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/actions/workflows/${workflowId}/dispatches`;
-                    
-                    // デフォルトブランチを取得（通常は 'main' または 'master'）
-                    let defaultBranch = 'main';
-                    
                     // GitHub Personal Access Tokenを取得（localStorageから）
                     const githubToken = localStorage.getItem('GITHUB_TOKEN');
                     
                     if (!githubToken) {
                         // トークンが設定されていない場合、手動実行ページを開く
-                        const workflowUrl = `https://github.com/${repoOwner}/${repoName}/actions/workflows/${workflowId}`;
+                        const workflowUrl = `https://github.com/${repoOwner}/${repoName}/actions/workflows/scrape-recipe.yml`;
                         const token = prompt(
                             'GitHub Personal Access Tokenを入力してください（初回のみ）:\n\n' +
                             'トークンを取得するには:\n' +
@@ -689,6 +682,7 @@
                     }
                     
                     // デフォルトブランチを取得
+                    let defaultBranch = 'main';
                     try {
                         const repoResponse = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}`, {
                             headers: {
@@ -705,7 +699,49 @@
                         console.warn('Failed to get default branch, using main:', err);
                     }
                     
+                    // ワークフローIDを取得（ファイル名からワークフローIDを検索）
+                    showNotification("ワークフローを検索しています...");
+                    let workflowId = null;
+                    try {
+                        const workflowsResponse = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/actions/workflows`, {
+                            headers: {
+                                'Accept': 'application/vnd.github+json',
+                                'Authorization': `Bearer ${githubToken}`,
+                                'X-GitHub-Api-Version': '2022-11-28'
+                            }
+                        });
+                        
+                        if (workflowsResponse.ok) {
+                            const workflowsData = await workflowsResponse.json();
+                            // ワークフロー名またはパスで検索
+                            const workflow = workflowsData.workflows?.find(w => 
+                                w.name === 'Scrape Recipe' || 
+                                w.path === '.github/workflows/scrape-recipe.yml' ||
+                                w.path?.endsWith('scrape-recipe.yml')
+                            );
+                            
+                            if (workflow) {
+                                workflowId = workflow.id; // 数値IDを使用
+                            } else {
+                                // フォールバック: ファイルパス形式を試す
+                                workflowId = '.github/workflows/scrape-recipe.yml';
+                            }
+                        } else {
+                            // フォールバック: ファイルパス形式を試す
+                            workflowId = '.github/workflows/scrape-recipe.yml';
+                        }
+                    } catch (err) {
+                        console.warn('Failed to get workflow list, using file path:', err);
+                        // フォールバック: ファイルパス形式を試す
+                        workflowId = '.github/workflows/scrape-recipe.yml';
+                    }
+                    
+                    if (!workflowId) {
+                        throw new Error('ワークフローが見つかりませんでした');
+                    }
+                    
                     // ワークフローを実行
+                    const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/actions/workflows/${workflowId}/dispatches`;
                     showNotification("GitHub Actionsでスクレイピングを開始しています...");
                     
                     const response = await fetch(apiUrl, {
@@ -736,10 +772,18 @@
                         }, 60000);
                     } else {
                         const errorData = await response.json().catch(() => ({}));
+                        console.error('API Error:', {
+                            status: response.status,
+                            statusText: response.statusText,
+                            error: errorData
+                        });
+                        
                         if (response.status === 401 || response.status === 403) {
                             // 認証エラーの場合、トークンを削除して再入力を促す
                             localStorage.removeItem('GITHUB_TOKEN');
                             showNotification("認証エラーです。トークンを再設定してください。");
+                        } else if (response.status === 404) {
+                            showNotification(`ワークフローが見つかりませんでした。リポジトリ: ${repoOwner}/${repoName}, ワークフローID: ${workflowId}`);
                         } else {
                             throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
                         }
