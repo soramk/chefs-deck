@@ -269,32 +269,68 @@
                                     </p>
                                 </div>
 
-                                <div className="space-y-1 max-h-60 overflow-y-auto pr-1 custom-scrollbar">
-                                    {recipe.ingredients.map((ing, idx) => {
-                                        const isNumber = ing.amount && !isNaN(parseFloat(ing.amount));
-                                        const calculatedAmount = isNumber
-                                            ? Math.round(parseFloat(ing.amount) * scaleFactor * 100) / 100
-                                            : ing.amount;
+                                <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                                    <div className="space-y-1">
+                                        <label className="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">
+                                            Ingredients
+                                        </label>
+                                        {recipe.ingredients.map((ing, idx) => {
+                                            const isNumber = ing.amount && !isNaN(parseFloat(ing.amount));
+                                            const calculatedAmount = isNumber
+                                                ? Math.round(parseFloat(ing.amount) * scaleFactor * 100) / 100
+                                                : ing.amount;
 
-                                        return (
-                                            <div key={idx} className="flex items-center justify-between text-sm py-1 border-b border-slate-50 last:border-0 hover:bg-slate-50 rounded px-1 transition-colors group/row">
-                                                <span className="text-slate-700 font-medium truncate flex-1">{ing.name}</span>
-                                                <div className="flex items-center gap-1">
-                                                    {isNumber ? (
-                                                        <input
-                                                            type="number"
-                                                            value={calculatedAmount}
-                                                            onChange={(e) => handleIngredientAmountChange(ing.amount, e.target.value)}
-                                                            className="w-16 text-right font-bold text-slate-800 bg-transparent border-b border-transparent hover:border-slate-300 focus:border-indigo-500 focus:bg-white outline-none transition-all py-0.5 px-1 rounded text-sm"
-                                                        />
-                                                    ) : (
-                                                        <span className="text-slate-500 text-xs">{ing.amount}</span>
-                                                    )}
-                                                    <span className="text-slate-400 text-xs w-8 text-left">{ing.unit}</span>
+                                            return (
+                                                <div key={idx} className="flex items-center justify-between text-sm py-1 border-b border-slate-50 last:border-0 hover:bg-slate-50 rounded px-1 transition-colors group/row">
+                                                    <span className="text-slate-700 font-medium truncate flex-1">{ing.name}</span>
+                                                    <div className="flex items-center gap-1">
+                                                        {isNumber ? (
+                                                            <input
+                                                                type="number"
+                                                                value={calculatedAmount}
+                                                                onChange={(e) => handleIngredientAmountChange(ing.amount, e.target.value)}
+                                                                className="w-16 text-right font-bold text-slate-800 bg-transparent border-b border-transparent hover:border-slate-300 focus:border-indigo-500 focus:bg-white outline-none transition-all py-0.5 px-1 rounded text-sm"
+                                                            />
+                                                        ) : (
+                                                            <span className="text-slate-500 text-xs">{ing.amount}</span>
+                                                        )}
+                                                        <span className="text-slate-400 text-xs w-8 text-left">{ing.unit}</span>
+                                                    </div>
                                                 </div>
+                                            );
+                                        })}
+                                    </div>
+
+                                    {recipe.steps && recipe.steps.length > 0 && (
+                                        <div className="mt-4 pt-4 border-t border-slate-100">
+                                            <label className="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-2 px-1">
+                                                Directions
+                                            </label>
+                                            <div className="space-y-3">
+                                                {recipe.steps.map((step, idx) => (
+                                                    <div key={idx} className="flex gap-3 items-start group">
+                                                        <span className="flex-shrink-0 w-5 h-5 rounded-full bg-slate-100 text-slate-500 text-[10px] font-bold flex items-center justify-center border border-slate-200">
+                                                            {idx + 1}
+                                                        </span>
+                                                        <p className="text-sm text-slate-600 leading-relaxed pt-0.5">
+                                                            {step}
+                                                        </p>
+                                                    </div>
+                                                ))}
                                             </div>
-                                        );
-                                    })}
+                                        </div>
+                                    )}
+
+                                    {recipe.notes && (
+                                        <div className="mt-4 pt-4 border-t border-slate-100">
+                                            <label className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest block mb-1 px-1">
+                                                Notes
+                                            </label>
+                                            <p className="text-xs text-slate-500 italic bg-slate-50 p-3 rounded-lg border border-slate-100">
+                                                {recipe.notes}
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         )}
@@ -649,6 +685,90 @@
                 return () => clearInterval(interval);
             }, []);
 
+            // GitHub Actions ワークフローを実行
+            const dispatchWorkflow = async (workflowId, inputs) => {
+                const githubToken = localStorage.getItem('GITHUB_TOKEN');
+                if (!githubToken) {
+                    showNotification("GitHub Tokenを設定してください");
+                    return false;
+                }
+
+                // リポジトリ情報を取得
+                let repoOwner = localStorage.getItem('GITHUB_OWNER');
+                let repoName = localStorage.getItem('GITHUB_REPO');
+
+                if (!repoOwner || !repoName) {
+                    if (window.location.hostname.includes('github.io')) {
+                        const pathParts = window.location.pathname.split('/').filter(p => p);
+                        repoOwner = window.location.hostname.split('.')[0];
+                        repoName = pathParts[0] || 'chefs-deck';
+                    } else {
+                        repoOwner = prompt('GitHubユーザー名を入力してください:');
+                        repoName = prompt('リポジトリ名を入力してください:');
+                    }
+                }
+
+                if (!repoOwner || !repoName) return false;
+
+                try {
+                    // デフォルトブランチを取得
+                    let defaultBranch = 'main';
+                    const repoResponse = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}`, {
+                        headers: {
+                            'Accept': 'application/vnd.github+json',
+                            'Authorization': `Bearer ${githubToken}`,
+                            'X-GitHub-Api-Version': '2022-11-28'
+                        }
+                    });
+                    if (repoResponse.ok) {
+                        const repoData = await repoResponse.json();
+                        defaultBranch = repoData.default_branch || 'main';
+                    }
+
+                    const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/actions/workflows/${workflowId}/dispatches`;
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/vnd.github+json',
+                            'Authorization': `Bearer ${githubToken}`,
+                            'X-GitHub-Api-Version': '2022-11-28',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            ref: defaultBranch,
+                            inputs
+                        })
+                    });
+
+                    if (response.ok) {
+                        return true;
+                    } else {
+                        const errorData = await response.json().catch(() => ({}));
+                        console.error('API Error:', {
+                            status: response.status,
+                            statusText: response.statusText,
+                            error: errorData
+                        });
+
+                        if (response.status === 401 || response.status === 403) {
+                            localStorage.removeItem('GITHUB_TOKEN');
+                            showNotification("認証エラーです。トークンを再設定してください。");
+                        } else if (response.status === 404) {
+                            showNotification(`ワークフローが見つかりませんでした。リポジトリ: ${repoOwner}/${repoName}`);
+                            const workflowUrl = `https://github.com/${repoOwner}/${repoName}/actions/workflows/${workflowId}`;
+                            window.open(workflowUrl, '_blank');
+                        } else {
+                            showNotification(`エラーが発生しました: ${errorData.message || `HTTP ${response.status}: ${response.statusText}`}`);
+                        }
+                        return false;
+                    }
+                } catch (err) {
+                    console.error("Workflow dispatch error:", err);
+                    showNotification("エラーが発生しました: " + err.message);
+                    return false;
+                }
+            };
+
             // localStorageへの保存は削除（GitHubで管理）
 
             const showNotification = (msg) => {
@@ -727,49 +847,16 @@
                         }
                     }
 
-                    // デフォルトブランチを取得
-                    let defaultBranch = 'main';
-                    try {
-                        const repoResponse = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}`, {
-                            headers: {
-                                'Accept': 'application/vnd.github+json',
-                                'Authorization': `Bearer ${githubToken}`,
-                                'X-GitHub-Api-Version': '2022-11-28'
-                            }
-                        });
-                        if (repoResponse.ok) {
-                            const repoData = await repoResponse.json();
-                            defaultBranch = repoData.default_branch || 'main';
-                        }
-                    } catch (err) {
-                        console.warn('Failed to get default branch, using main:', err);
-                    }
-
                     // ワークフローを実行
                     const workflowId = 'scrape-recipe.yml';
-                    const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/actions/workflows/${workflowId}/dispatches`;
-                    showNotification("GitHub Actionsでスクレイピングを開始しています...");
-
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Accept': 'application/vnd.github+json',
-                            'Authorization': `Bearer ${githubToken}`,
-                            'X-GitHub-Api-Version': '2022-11-28',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            ref: defaultBranch,
-                            inputs: {
-                                url: importUrl,
-                                use_gemini: useGemini ? 'true' : 'false',
-                                gemini_model: selectedModel,
-                                gemini_api_key: useGemini ? geminiApiKey : ""
-                            }
-                        })
+                    const success = await dispatchWorkflow(workflowId, {
+                        url: importUrl,
+                        use_gemini: useGemini ? 'true' : 'false',
+                        gemini_model: selectedModel,
+                        gemini_api_key: useGemini ? geminiApiKey : ""
                     });
 
-                    if (response.ok) {
+                    if (success) {
                         const actionsUrl = `https://github.com/${repoOwner}/${repoName}/actions`;
                         showNotification(
                             <span>
@@ -786,26 +873,6 @@
                             loadRecipes();
                             showNotification("レシピを再読み込みしました");
                         }, 60000);
-                    } else {
-                        const errorData = await response.json().catch(() => ({}));
-                        console.error('API Error:', {
-                            status: response.status,
-                            statusText: response.statusText,
-                            error: errorData
-                        });
-
-                        if (response.status === 401 || response.status === 403) {
-                            // 認証エラーの場合、トークンを削除して再入力を促す
-                            localStorage.removeItem('GITHUB_TOKEN');
-                            showNotification("認証エラーです。トークンを再設定してください。");
-                        } else if (response.status === 404) {
-                            showNotification(`ワークフローが見つかりませんでした。リポジトリ: ${repoOwner}/${repoName}`);
-                            // フォールバックとして手動ページを開く
-                            const workflowUrl = `https://github.com/${repoOwner}/${repoName}/actions/workflows/scrape-recipe.yml`;
-                            window.open(workflowUrl, '_blank');
-                        } else {
-                            throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
-                        }
                     }
 
                 } catch (err) {
@@ -830,16 +897,31 @@
                 }
             };
 
-            const handleSave = (recipe) => {
-                if (recipes.some(r => r.id === recipe.id)) {
+            const handleSave = async (recipe) => {
+                const isNew = !recipes.some(r => r.id === recipe.id);
+
+                // ローカル状態を即座に更新
+                if (!isNew) {
                     setRecipes(recipes.map(r => r.id === recipe.id ? recipe : r));
-                    showNotification("カード情報を更新しました");
                 } else {
                     setRecipes([recipe, ...recipes]);
-                    showNotification("新しいカードをデッキに追加しました！");
                 }
+
+                showNotification(isNew ? "新しいカードを準備中..." : "変更を保存中...");
                 setView("list");
                 setEditingRecipe(null);
+
+                // GitHubに保存
+                const success = await dispatchWorkflow('save-recipe.yml', {
+                    recipe_id: recipe.id.toString(),
+                    recipe_json: JSON.stringify(recipe)
+                });
+
+                if (success) {
+                    showNotification(isNew ? "デッキにカードを追加しました！" : "リポジトリの情報を更新しました");
+                    // 反映を待つ
+                    setTimeout(loadRecipes, 30000);
+                }
             };
 
             const handleDelete = (id) => {

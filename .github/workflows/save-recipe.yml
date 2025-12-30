@@ -1,0 +1,45 @@
+name: Save Recipe Changes
+
+on:
+    workflow_dispatch:
+        inputs:
+            recipe_id:
+                description: "Recipe ID (timestamp)"
+                required: true
+                type: string
+            recipe_json:
+                description: "Full recipe JSON string"
+                required: true
+                type: string
+
+jobs:
+    save:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20"
+
+            - name: Save recipe file
+              run: |
+                  mkdir -p data
+                  echo '${{ github.event.inputs.recipe_json }}' > data/recipe-${{ github.event.inputs.recipe_id }}.json
+
+            - name: Generate recipes.json
+              run: |
+                  npm install
+                  node api/recipes.json.js
+
+            - name: Commit and push changes
+              run: |
+                  git config --local user.email "action@github.com"
+                  git config --local user.name "GitHub Action"
+                  git add data/ api/
+                  git diff --staged --quiet || git commit -m "Update recipe: ${{ github.event.inputs.recipe_id }}"
+                  git push
