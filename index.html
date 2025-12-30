@@ -1,22 +1,25 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chef's Deck - Recipe Collection</title>
-    
+
     <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    
+
     <!-- Babel for JSX -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Montserrat:wght@700&display=swap"
+        rel="stylesheet">
 
     <!-- Lucide Icons (Script version) -->
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -24,6 +27,7 @@
     <!-- Custom Styles -->
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div id="root"></div>
 
@@ -34,109 +38,109 @@
         // --- Icons ---
         const IconChefHat = ({ className }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                <path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 10.18 0A4 4 0 0 1 18 13.87V21H6Z"/>
-                <line x1="6" y1="17" x2="18" y2="17"/>
+                <path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 10.18 0A4 4 0 0 1 18 13.87V21H6Z" />
+                <line x1="6" y1="17" x2="18" y2="17" />
             </svg>
         );
 
         const IconLayers = ({ className }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-                <polyline points="2 17 12 22 22 17"/>
-                <polyline points="2 12 12 17 22 12"/>
+                <polygon points="12 2 2 7 12 12 22 7 12 2" />
+                <polyline points="2 17 12 22 22 17" />
+                <polyline points="2 12 12 17 22 12" />
             </svg>
         );
 
         const IconPlus = ({ className }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                <line x1="12" y1="5" x2="12" y2="19"/>
-                <line x1="5" y1="12" x2="19" y2="12"/>
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
         );
 
         const IconTrash = ({ className }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                <polyline points="3 6 5 6 21 6"/>
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
             </svg>
         );
 
         const IconExternalLink = ({ className }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                <polyline points="15 3 21 3 21 9"/>
-                <line x1="10" y1="14" x2="21" y2="3"/>
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                <polyline points="15 3 21 3 21 9" />
+                <line x1="10" y1="14" x2="21" y2="3" />
             </svg>
         );
 
         const IconSearch = ({ className }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                <circle cx="11" cy="11" r="8"/>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
         );
 
         const IconSave = ({ className }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-                <polyline points="17 21 17 13 7 13 7 21"/>
-                <polyline points="7 3 7 8 15 8"/>
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                <polyline points="17 21 17 13 7 13 7 21" />
+                <polyline points="7 3 7 8 15 8" />
             </svg>
         );
 
         const IconEdit = ({ className }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
             </svg>
         );
 
         const IconLoader = ({ className }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                <line x1="12" y1="2" x2="12" y2="6"/>
-                <line x1="12" y1="18" x2="12" y2="22"/>
-                <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/>
-                <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/>
-                <line x1="2" y1="12" x2="6" y2="12"/>
-                <line x1="18" y1="12" x2="22" y2="12"/>
-                <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/>
-                <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/>
+                <line x1="12" y1="2" x2="12" y2="6" />
+                <line x1="12" y1="18" x2="12" y2="22" />
+                <line x1="4.93" y1="4.93" x2="7.76" y2="7.76" />
+                <line x1="16.24" y1="16.24" x2="19.07" y2="19.07" />
+                <line x1="2" y1="12" x2="6" y2="12" />
+                <line x1="18" y1="12" x2="22" y2="12" />
+                <line x1="4.93" y1="19.07" x2="7.76" y2="16.24" />
+                <line x1="16.24" y1="7.76" x2="19.07" y2="4.93" />
             </svg>
         );
 
         const IconUsers = ({ className }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                <circle cx="9" cy="7" r="4"/>
-                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
             </svg>
         );
 
         const IconCalculator = ({ className }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                <rect width="16" height="20" x="4" y="2" rx="2"/>
-                <line x1="8" x2="16" y1="6" y2="6"/>
-                <line x1="16" x2="16" y1="14" y2="18"/>
-                <path d="M16 10h.01"/>
-                <path d="M12 10h.01"/>
-                <path d="M8 10h.01"/>
-                <path d="M12 14h.01"/>
-                <path d="M8 14h.01"/>
-                <path d="M12 18h.01"/>
-                <path d="M8 18h.01"/>
+                <rect width="16" height="20" x="4" y="2" rx="2" />
+                <line x1="8" x2="16" y1="6" y2="6" />
+                <line x1="16" x2="16" y1="14" y2="18" />
+                <path d="M16 10h.01" />
+                <path d="M12 10h.01" />
+                <path d="M8 10h.01" />
+                <path d="M12 14h.01" />
+                <path d="M8 14h.01" />
+                <path d="M12 18h.01" />
+                <path d="M8 18h.01" />
             </svg>
         );
 
         const IconChevronDown = ({ className }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                <path d="m6 9 6 6 6-6"/>
+                <path d="m6 9 6 6 6-6" />
             </svg>
         );
 
         const IconChevronUp = ({ className }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                <path d="m18 15-6-6-6 6"/>
+                <path d="m18 15-6-6-6 6" />
             </svg>
         );
 
@@ -146,10 +150,10 @@
                 const newIngredients = recipe.ingredients.map(str => {
                     const match = str.match(/^(.+?)\s*([0-9.]+|½|¼|¾)\s*(.+)?$/);
                     if (match) {
-                        return { 
-                            name: match[1].trim(), 
-                            amount: isNaN(parseFloat(match[2])) ? match[2] : parseFloat(match[2]), 
-                            unit: match[3] ? match[3].trim() : "" 
+                        return {
+                            name: match[1].trim(),
+                            amount: isNaN(parseFloat(match[2])) ? match[2] : parseFloat(match[2]),
+                            unit: match[3] ? match[3].trim() : ""
                         };
                     }
                     return { name: str, amount: "", unit: "" };
@@ -167,7 +171,7 @@
         const RecipeCard = ({ recipe, onDelete, onEdit }) => {
             const [isExpanded, setIsExpanded] = useState(false);
             const [scaleFactor, setScaleFactor] = useState(1);
-            
+
             const currentServings = Math.round((recipe.baseServings || 2) * scaleFactor * 10) / 10;
 
             const handleServingChange = (e) => {
@@ -189,7 +193,7 @@
             return (
                 <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden card-hover transition-all duration-300 fade-in flex flex-col relative h-fit">
                     <div className="h-1 w-full bg-indigo-500"></div>
-                    
+
                     <div className="h-48 overflow-hidden relative group cursor-pointer" onClick={toggleExpand}>
                         <img src={recipe.image} alt={recipe.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300" />
@@ -197,8 +201,8 @@
                             #{recipe.id.toString().slice(-4)}
                         </div>
                         <div className="absolute bottom-2 right-2 bg-indigo-600/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-bold shadow-md flex items-center gap-1">
-                             <IconCalculator className="w-3 h-3" />
-                             {isExpanded ? "計算中" : "分量計算"}
+                            <IconCalculator className="w-3 h-3" />
+                            {isExpanded ? "計算中" : "分量計算"}
                         </div>
                     </div>
 
@@ -208,10 +212,10 @@
                                 {recipe.title}
                             </h3>
                             <button onClick={toggleExpand} className="text-slate-400 hover:text-indigo-500 p-1">
-                                {isExpanded ? <IconChevronUp className="w-5 h-5"/> : <IconChevronDown className="w-5 h-5"/>}
+                                {isExpanded ? <IconChevronUp className="w-5 h-5" /> : <IconChevronDown className="w-5 h-5" />}
                             </button>
                         </div>
-                        
+
                         {!isExpanded ? (
                             <div className="flex items-center gap-2 text-sm text-slate-500 mb-4">
                                 <span className="bg-slate-100 border border-slate-200 px-2 py-1 rounded text-xs font-medium flex items-center gap-1">
@@ -228,7 +232,7 @@
                                         <label className="text-xs font-bold text-indigo-800 uppercase tracking-wide flex items-center gap-1">
                                             <IconCalculator className="w-3 h-3" /> Smart Scaling
                                         </label>
-                                        <button 
+                                        <button
                                             onClick={() => setScaleFactor(1)}
                                             className="text-[10px] bg-white border border-indigo-200 text-indigo-600 px-2 py-0.5 rounded hover:bg-indigo-50 transition-colors"
                                         >
@@ -238,8 +242,8 @@
                                     <div className="flex items-center gap-2">
                                         <div className="flex-1">
                                             <div className="relative">
-                                                <input 
-                                                    type="number" 
+                                                <input
+                                                    type="number"
                                                     value={currentServings}
                                                     onChange={handleServingChange}
                                                     step="0.5"
@@ -252,15 +256,15 @@
                                         </div>
                                     </div>
                                     <p className="text-[10px] text-indigo-400 mt-2 text-center leading-tight">
-                                        下の材料の数値を変更しても<br/>全体が自動計算されます
+                                        下の材料の数値を変更しても<br />全体が自動計算されます
                                     </p>
                                 </div>
 
                                 <div className="space-y-1 max-h-60 overflow-y-auto pr-1 custom-scrollbar">
                                     {recipe.ingredients.map((ing, idx) => {
                                         const isNumber = ing.amount && !isNaN(parseFloat(ing.amount));
-                                        const calculatedAmount = isNumber 
-                                            ? Math.round(parseFloat(ing.amount) * scaleFactor * 100) / 100 
+                                        const calculatedAmount = isNumber
+                                            ? Math.round(parseFloat(ing.amount) * scaleFactor * 100) / 100
                                             : ing.amount;
 
                                         return (
@@ -268,7 +272,7 @@
                                                 <span className="text-slate-700 font-medium truncate flex-1">{ing.name}</span>
                                                 <div className="flex items-center gap-1">
                                                     {isNumber ? (
-                                                        <input 
+                                                        <input
                                                             type="number"
                                                             value={calculatedAmount}
                                                             onChange={(e) => handleIngredientAmountChange(ing.amount, e.target.value)}
@@ -287,9 +291,9 @@
                         )}
 
                         <div className="mt-auto pt-4 flex items-center justify-between border-t border-slate-100">
-                             <a 
-                                href={recipe.url} 
-                                target="_blank" 
+                            <a
+                                href={recipe.url}
+                                target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-slate-400 hover:text-indigo-500 transition-colors flex items-center gap-1 text-xs"
                                 title="元のサイトを開く"
@@ -297,13 +301,13 @@
                                 <IconExternalLink className="w-4 h-4" /> Source
                             </a>
                             <div className="flex gap-2">
-                                <button 
+                                <button
                                     onClick={() => onEdit(recipe)}
                                     className="p-2 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors"
                                 >
                                     <IconEdit className="w-5 h-5" />
                                 </button>
-                                <button 
+                                <button
                                     onClick={() => onDelete(recipe.id)}
                                     className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
                                 >
@@ -382,14 +386,14 @@
                         <IconEdit className="text-indigo-500" />
                         Edit Card
                     </h2>
-                    
+
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-4">
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-1">料理名</label>
-                                    <input 
-                                        type="text" 
+                                    <input
+                                        type="text"
                                         required
                                         className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 outline-none transition-all"
                                         value={formData.title}
@@ -400,8 +404,8 @@
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-1">基準の人数</label>
                                     <div className="relative">
-                                        <input 
-                                            type="number" 
+                                        <input
+                                            type="number"
                                             min="1"
                                             className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 outline-none transition-all pl-10"
                                             value={formData.baseServings}
@@ -413,8 +417,8 @@
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-1">参考URL</label>
-                                    <input 
-                                        type="url" 
+                                    <input
+                                        type="url"
                                         className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 outline-none transition-all text-sm text-slate-600"
                                         value={formData.url}
                                         onChange={(e) => handleChange("url", e.target.value)}
@@ -425,8 +429,8 @@
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">画像URL</label>
                                 <div className="relative mb-2">
-                                    <input 
-                                        type="text" 
+                                    <input
+                                        type="text"
                                         className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 outline-none transition-all text-sm"
                                         value={formData.image}
                                         onChange={(e) => handleChange("image", e.target.value)}
@@ -434,9 +438,9 @@
                                     />
                                 </div>
                                 <div className="h-32 w-full rounded-lg overflow-hidden bg-slate-100 border border-slate-200">
-                                    <img 
-                                        src={formData.image || "https://placehold.co/600x400?text=No+Image"} 
-                                        alt="Preview" 
+                                    <img
+                                        src={formData.image || "https://placehold.co/600x400?text=No+Image"}
+                                        alt="Preview"
                                         className="w-full h-full object-cover"
                                         onError={(e) => e.target.src = "https://placehold.co/600x400?text=No+Image"}
                                     />
@@ -460,7 +464,7 @@
                                 {formData.ingredients.map((ing, idx) => (
                                     <div key={idx} className="grid grid-cols-12 gap-2 items-center">
                                         <div className="col-span-6">
-                                            <input 
+                                            <input
                                                 type="text"
                                                 className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:border-indigo-500 outline-none text-sm"
                                                 value={ing.name}
@@ -469,7 +473,7 @@
                                             />
                                         </div>
                                         <div className="col-span-3">
-                                            <input 
+                                            <input
                                                 type="number"
                                                 className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:border-indigo-500 outline-none text-sm"
                                                 value={ing.amount}
@@ -478,7 +482,7 @@
                                             />
                                         </div>
                                         <div className="col-span-2">
-                                            <input 
+                                            <input
                                                 type="text"
                                                 className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:border-indigo-500 outline-none text-sm"
                                                 value={ing.unit}
@@ -507,7 +511,7 @@
                                 {formData.steps.map((step, idx) => (
                                     <div key={idx} className="flex gap-2 items-start">
                                         <span className="mt-2 text-xs font-bold text-slate-400 w-6 text-center">{idx + 1}</span>
-                                        <textarea 
+                                        <textarea
                                             className="flex-1 px-3 py-2 rounded-lg border border-slate-300 focus:border-indigo-500 outline-none text-sm min-h-[60px]"
                                             value={step}
                                             onChange={(e) => handleStepChange(idx, e.target.value)}
@@ -520,17 +524,17 @@
                                 ))}
                             </div>
                         </div>
-                        
+
                         <div className="flex gap-4 pt-6 border-t border-slate-100">
-                            <button 
-                                type="button" 
+                            <button
+                                type="button"
                                 onClick={onCancel}
                                 className="flex-1 py-3 px-4 rounded-lg border border-slate-300 text-slate-600 hover:bg-slate-50 font-bold transition-colors"
                             >
                                 キャンセル
                             </button>
-                            <button 
-                                type="submit" 
+                            <button
+                                type="submit"
                                 className="flex-1 py-3 px-4 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 shadow-md hover:shadow-lg font-bold transition-all flex justify-center items-center gap-2"
                             >
                                 <IconSave className="w-5 h-5" />
@@ -635,27 +639,32 @@
                     // GitHubリポジトリ情報を取得
                     let repoOwner = '';
                     let repoName = '';
-                    
+
                     if (window.location.hostname.includes('github.io')) {
                         // GitHub Pagesの場合: https://username.github.io/repo-name/
                         const pathParts = window.location.pathname.split('/').filter(p => p);
-                        repoOwner = pathParts[0] || '';
-                        repoName = pathParts[1] || 'chefs-deck';
+                        // username.github.io の username 部分を抽出
+                        repoOwner = window.location.hostname.split('.')[0];
+                        // パスの最初の部分がリポジトリ名（カスタムドメインでない場合）
+                        repoName = pathParts[0] || 'chefs-deck';
                     } else {
                         // ローカル開発環境の場合、設定から取得またはデフォルト値
-                        repoOwner = prompt('GitHubユーザー名または組織名を入力してください:') || 'your-username';
-                        repoName = prompt('リポジトリ名を入力してください:') || 'chefs-deck';
+                        repoOwner = localStorage.getItem('GITHUB_OWNER') || prompt('GitHubユーザー名を入力してください:') || '';
+                        repoName = localStorage.getItem('GITHUB_REPO') || prompt('リポジトリ名を入力してください:') || 'chefs-deck';
+
+                        if (repoOwner) localStorage.setItem('GITHUB_OWNER', repoOwner);
+                        if (repoName) localStorage.setItem('GITHUB_REPO', repoName);
                     }
-                    
-                    if (!repoOwner || repoOwner === 'your-username') {
+
+                    if (!repoOwner || !repoName) {
                         showNotification("GitHubリポジトリ情報を設定してください");
                         setIsLoading(false);
                         return;
                     }
-                    
+
                     // GitHub Personal Access Tokenを取得（localStorageから）
                     const githubToken = localStorage.getItem('GITHUB_TOKEN');
-                    
+
                     if (!githubToken) {
                         // トークンが設定されていない場合、手動実行ページを開く
                         const workflowUrl = `https://github.com/${repoOwner}/${repoName}/actions/workflows/scrape-recipe.yml`;
@@ -668,7 +677,7 @@
                             '4. トークンをコピーしてここに貼り付け\n\n' +
                             '（トークンを入力しない場合は、手動実行ページを開きます）'
                         );
-                        
+
                         if (token && token.trim()) {
                             localStorage.setItem('GITHUB_TOKEN', token);
                             // 再試行
@@ -680,7 +689,7 @@
                             return;
                         }
                     }
-                    
+
                     // デフォルトブランチを取得
                     let defaultBranch = 'main';
                     try {
@@ -698,77 +707,12 @@
                     } catch (err) {
                         console.warn('Failed to get default branch, using main:', err);
                     }
-                    
-                    // CORSの問題を回避するため、GitHub Actionsページを開いて手動実行を促す
-                    // ブラウザから直接GitHub APIを呼び出すとCORSエラーが発生する可能性があるため
-                    const workflowUrl = `https://github.com/${repoOwner}/${repoName}/actions/workflows/scrape-recipe.yml`;
-                    
-                    // URLパラメータで入力値を渡す（GitHub ActionsはURLパラメータをサポートしていないため、
-                    // 手動実行ページを開いて、ユーザーに入力してもらう）
-                    window.open(workflowUrl, '_blank');
-                    
-                    showNotification(
-                        `GitHub Actionsページを開きました。\n` +
-                        `「Run workflow」をクリックして、以下の値を入力してください：\n` +
-                        `URL: ${importUrl}\n` +
-                        `Use Gemini: ${useGemini ? 'true' : 'false'}`
-                    );
-                    
-                    setImportUrl("");
-                    
-                    // 60秒後にレシピを再読み込み（ワークフロー完了を待つ）
-                    setTimeout(() => {
-                        loadRecipes();
-                        showNotification("レシピを再読み込みしました");
-                    }, 60000);
-                    
-                    // 以下はCORSエラーのためコメントアウト
-                    /*
-                    // ワークフローIDを取得（ファイル名からワークフローIDを検索）
-                    showNotification("ワークフローを検索しています...");
-                    let workflowId = null;
-                    try {
-                        const workflowsResponse = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/actions/workflows`, {
-                            headers: {
-                                'Accept': 'application/vnd.github+json',
-                                'Authorization': `Bearer ${githubToken}`,
-                                'X-GitHub-Api-Version': '2022-11-28'
-                            }
-                        });
-                        
-                        if (workflowsResponse.ok) {
-                            const workflowsData = await workflowsResponse.json();
-                            // ワークフロー名またはパスで検索
-                            const workflow = workflowsData.workflows?.find(w => 
-                                w.name === 'Scrape Recipe' || 
-                                w.path === '.github/workflows/scrape-recipe.yml' ||
-                                w.path?.endsWith('scrape-recipe.yml')
-                            );
-                            
-                            if (workflow) {
-                                workflowId = workflow.id; // 数値IDを使用
-                            } else {
-                                // フォールバック: ファイルパス形式を試す
-                                workflowId = '.github/workflows/scrape-recipe.yml';
-                            }
-                        } else {
-                            // フォールバック: ファイルパス形式を試す
-                            workflowId = '.github/workflows/scrape-recipe.yml';
-                        }
-                    } catch (err) {
-                        console.warn('Failed to get workflow list, using file path:', err);
-                        // フォールバック: ファイルパス形式を試す
-                        workflowId = '.github/workflows/scrape-recipe.yml';
-                    }
-                    
-                    if (!workflowId) {
-                        throw new Error('ワークフローが見つかりませんでした');
-                    }
-                    
+
                     // ワークフローを実行
+                    const workflowId = 'scrape-recipe.yml';
                     const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/actions/workflows/${workflowId}/dispatches`;
                     showNotification("GitHub Actionsでスクレイピングを開始しています...");
-                    
+
                     const response = await fetch(apiUrl, {
                         method: 'POST',
                         headers: {
@@ -785,11 +729,11 @@
                             }
                         })
                     });
-                    
+
                     if (response.ok) {
                         showNotification("スクレイピングを開始しました。完了までお待ちください...");
                         setImportUrl("");
-                        
+
                         // 60秒後にレシピを再読み込み（ワークフロー完了を待つ）
                         setTimeout(() => {
                             loadRecipes();
@@ -802,19 +746,21 @@
                             statusText: response.statusText,
                             error: errorData
                         });
-                        
+
                         if (response.status === 401 || response.status === 403) {
                             // 認証エラーの場合、トークンを削除して再入力を促す
                             localStorage.removeItem('GITHUB_TOKEN');
                             showNotification("認証エラーです。トークンを再設定してください。");
                         } else if (response.status === 404) {
-                            showNotification(`ワークフローが見つかりませんでした。リポジトリ: ${repoOwner}/${repoName}, ワークフローID: ${workflowId}`);
+                            showNotification(`ワークフローが見つかりませんでした。リポジトリ: ${repoOwner}/${repoName}`);
+                            // フォールバックとして手動ページを開く
+                            const workflowUrl = `https://github.com/${repoOwner}/${repoName}/actions/workflows/scrape-recipe.yml`;
+                            window.open(workflowUrl, '_blank');
                         } else {
                             throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
                         }
                     }
-                    */
-                    
+
                 } catch (err) {
                     console.error("Import error:", err);
                     // CORSエラーの場合、より分かりやすいメッセージを表示
@@ -876,9 +822,9 @@
                                     <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest leading-none mt-1">Recipe Collection</span>
                                 </div>
                             </div>
-                            
+
                             {view === "list" && (
-                                <button 
+                                <button
                                     onClick={handleCreateNew}
                                     className="bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-slate-700 transition-colors flex items-center gap-2 shadow-sm"
                                 >
@@ -897,36 +843,36 @@
                     )}
 
                     <main className="max-w-5xl mx-auto px-4 mt-8">
-                        
+
                         {view === "list" && (
                             <div className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl p-6 md:p-10 mb-10 shadow-lg text-white relative overflow-hidden">
                                 <div className="absolute top-0 right-0 opacity-10 transform translate-x-10 -translate-y-10">
                                     <IconLayers className="w-64 h-64" />
                                 </div>
-                                
+
                                 <div className="relative z-10 max-w-2xl">
                                     <h2 className="text-2xl md:text-3xl font-bold mb-2 font-brand">Build Your Deck.</h2>
                                     <p className="mb-6 text-indigo-100">
-                                        Web上のレシピをカード化して、あなただけの最強デッキ（レシピ集）を構築しよう。<br className="hidden md:inline"/>
+                                        Web上のレシピをカード化して、あなただけの最強デッキ（レシピ集）を構築しよう。<br className="hidden md:inline" />
                                         人数や手持ちの材料に合わせて、分量を自動計算します。
                                     </p>
-                                    
+
                                     <form onSubmit={handleImport} className="space-y-3">
                                         <div className="flex flex-col sm:flex-row gap-3">
                                             <div className="flex-1 relative text-slate-800">
                                                 <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
                                                     <IconSearch className="w-5 h-5" />
                                                 </div>
-                                                <input 
-                                                    type="url" 
+                                                <input
+                                                    type="url"
                                                     className="w-full pl-10 pr-4 py-3 rounded-xl border-0 focus:ring-4 focus:ring-indigo-300 outline-none shadow-sm font-medium"
                                                     placeholder="Paste recipe URL here..."
                                                     value={importUrl}
                                                     onChange={(e) => setImportUrl(e.target.value)}
                                                 />
                                             </div>
-                                            <button 
-                                                type="submit" 
+                                            <button
+                                                type="submit"
                                                 disabled={isLoading}
                                                 className="bg-white text-indigo-600 font-bold py-3 px-6 rounded-xl hover:bg-indigo-50 transition-colors shadow-sm disabled:opacity-70 flex items-center justify-center gap-2 min-w-[140px]"
                                             >
@@ -934,8 +880,8 @@
                                             </button>
                                         </div>
                                         <div className="flex items-center gap-2 text-white">
-                                            <input 
-                                                type="checkbox" 
+                                            <input
+                                                type="checkbox"
                                                 id="useGemini"
                                                 checked={useGemini}
                                                 onChange={(e) => setUseGemini(e.target.checked)}
@@ -971,13 +917,13 @@
                                     {recipes.length === 0 ? (
                                         <div className="col-span-full text-center py-20 text-slate-400 bg-white rounded-2xl border border-dashed border-slate-300">
                                             <IconLayers className="w-16 h-16 mx-auto mb-4 opacity-20" />
-                                            <p>デッキが空です。<br/>URLを取り込んで最初のカードを追加しましょう。</p>
+                                            <p>デッキが空です。<br />URLを取り込んで最初のカードを追加しましょう。</p>
                                         </div>
                                     ) : (
                                         recipes.map(recipe => (
-                                            <RecipeCard 
-                                                key={recipe.id} 
-                                                recipe={recipe} 
+                                            <RecipeCard
+                                                key={recipe.id}
+                                                recipe={recipe}
                                                 onDelete={handleDelete}
                                                 onEdit={handleEdit}
                                             />
@@ -986,8 +932,8 @@
                                 </div>
                             </div>
                         ) : (
-                            <RecipeEditor 
-                                initialData={editingRecipe} 
+                            <RecipeEditor
+                                initialData={editingRecipe}
                                 onSave={handleSave}
                                 onCancel={() => setView("list")}
                             />
@@ -1003,5 +949,5 @@
         root.render(<App />);
     </script>
 </body>
-</html>
 
+</html>
