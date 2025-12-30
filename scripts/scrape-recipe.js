@@ -163,8 +163,11 @@ async function extractWithGemini(html, url) {
 
     const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
     // プレビューモデル等に対応するため v1beta を使用
-    const modelOptions = { model: GEMINI_MODEL || 'gemini-1.5-flash', apiVersion: 'v1beta' };
-    const model = genAI.getGenerativeModel(modelOptions);
+    // @google/generative-ai の最近のバージョンでは、第2引数に RequestOptions を指定します
+    const model = genAI.getGenerativeModel(
+        { model: GEMINI_MODEL || 'gemini-1.5-flash' },
+        { apiVersion: 'v1beta' }
+    );
 
     // HTMLからテキストを抽出（簡易版）
     const $ = cheerio.load(html);
