@@ -1,0 +1,42 @@
+{
+  "id": 1767115342423,
+  "title": "寄せ鍋つゆ",
+  "url": "https://www.kurashiru.com/recipes/c2cdb792-fc7e-4c3a-8497-02311e9e4ba3",
+  "image": "",
+  "ingredients": [
+    {
+      "name": "水",
+      "amount": "800",
+      "unit": "ml"
+    },
+    {
+      "name": "料理酒",
+      "amount": "3",
+      "unit": "大さじ"
+    },
+    {
+      "name": "みりん",
+      "amount": "3",
+      "unit": "大さじ"
+    },
+    {
+      "name": "しょうゆ",
+      "amount": "3",
+      "unit": "大さじ"
+    },
+    {
+      "name": "顆粒和風だし",
+      "amount": "2",
+      "unit": "小さじ"
+    }
+  ],
+  "steps": [
+    "鍋にすべての材料を入れてかき混ぜます。",
+    "中火で加熱し、ひと煮立ちしたら完成です。"
+  ],
+  "baseServings": 4,
+  "notes": "",
+  "scrapedAt": "2025-12-30T17:22:14.711Z",
+  "scrapingProtocol": "gemini-api",
+  "source": "www.kurashiru.com"
+}
