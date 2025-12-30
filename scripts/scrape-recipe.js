@@ -8,6 +8,7 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const RECIPE_URL = process.env.RECIPE_URL || process.argv[2];
 const USE_GEMINI = process.env.USE_GEMINI === 'true' || process.argv[3] === 'true';
+const GEMINI_MODEL = process.env.GEMINI_MODEL || process.argv[4] || 'gemini-1.5-flash';
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 if (!RECIPE_URL) {
@@ -64,7 +65,7 @@ const SCRAPING_PROTOCOLS = {
                                 }
                                 return ing;
                             }) || [],
-                            steps: recipe.recipeInstructions?.map(step => 
+                            steps: recipe.recipeInstructions?.map(step =>
                                 typeof step === 'string' ? step : step.text || step.name || ''
                             ) || [],
                             baseServings: recipe.recipeYield || 2
@@ -77,7 +78,7 @@ const SCRAPING_PROTOCOLS = {
             return null;
         }
     },
-    
+
     // Cookpad形式
     cookpad: {
         name: 'Cookpad',
@@ -97,14 +98,14 @@ const SCRAPING_PROTOCOLS = {
                 steps.push($(el).find('.step-text').text().trim());
             });
             const baseServings = parseInt($('.servings').text().match(/\d+/)?.[0] || '2');
-            
+
             if (title) {
                 return { title, image, ingredients, steps, baseServings };
             }
             return null;
         }
     },
-    
+
     // レシピブログ形式（汎用）
     recipeBlog: {
         name: 'Recipe Blog',
@@ -112,7 +113,7 @@ const SCRAPING_PROTOCOLS = {
         extract: ($, protocol) => {
             const title = $('h1, .recipe-title, .entry-title').first().text().trim();
             const image = $('.recipe-image img, .entry-content img').first().attr('src') || '';
-            
+
             // 材料セクションを探す
             const ingredients = [];
             $('h2, h3').each((i, el) => {
@@ -131,7 +132,7 @@ const SCRAPING_PROTOCOLS = {
                     });
                 }
             });
-            
+
             // 手順セクションを探す
             const steps = [];
             $('h2, h3').each((i, el) => {
@@ -145,7 +146,7 @@ const SCRAPING_PROTOCOLS = {
                     });
                 }
             });
-            
+
             if (title && (ingredients.length > 0 || steps.length > 0)) {
                 return { title, image, ingredients, steps, baseServings: 2 };
             }
@@ -159,14 +160,14 @@ async function extractWithGemini(html, url) {
     if (!GEMINI_API_KEY) {
         throw new Error('GEMINI_API_KEY is not set');
     }
-    
+
     const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-    
+
     // HTMLからテキストを抽出（簡易版）
     const $ = cheerio.load(html);
     $('script, style, nav, footer, header').remove();
     const text = $('body').text().replace(/\s+/g, ' ').substring(0, 50000); // 制限内に収める
-    
+
     const prompt = `以下のWebページのテキストからレシピ情報を抽出してください。
 URL: ${url}
 
@@ -184,15 +185,15 @@ ${text}
   "baseServings": 2
 }`;
 
-    // gemini-3-flash-previewモデルを使用
-    const modelName = 'gemini-3-flash-preview';
+    // モデルを指定
+    const modelName = GEMINI_MODEL || 'gemini-1.5-flash';
     const model = genAI.getGenerativeModel({ model: modelName });
-    
+
     try {
         const result = await model.generateContent(prompt);
         const response = await result.response;
         const responseText = response.text();
-        
+
         // JSONを抽出
         const jsonMatch = responseText.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
@@ -208,7 +209,7 @@ ${text}
 // メインスクレイピング関数
 async function scrapeRecipe(url) {
     console.log(`Scraping recipe from: ${url}`);
-    
+
     try {
         // HTMLを取得
         const response = await axios.get(url, {
@@ -218,10 +219,10 @@ async function scrapeRecipe(url) {
         });
         const html = response.data;
         const $ = cheerio.load(html);
-        
+
         let recipeData = null;
         let protocolUsed = null;
-        
+
         if (USE_GEMINI) {
             // Gemini APIを使用
             console.log('Using Gemini API for extraction...');
@@ -244,11 +245,11 @@ async function scrapeRecipe(url) {
                 }
             }
         }
-        
+
         if (!recipeData || !recipeData.title) {
             throw new Error('Failed to extract recipe data');
         }
-        
+
         // レシピデータを完成させる
         const recipe = {
             ...RECIPE_SCHEMA,
@@ -262,15 +263,15 @@ async function scrapeRecipe(url) {
             scrapingProtocol: protocolUsed,
             source: new URL(url).hostname
         };
-        
+
         // JSONファイルとして保存
         const filename = `recipe-${recipe.id}.json`;
         const filepath = path.join(DATA_DIR, filename);
         fs.writeFileSync(filepath, JSON.stringify(recipe, null, 2), 'utf-8');
-        
+
         console.log(`Recipe saved to: ${filepath}`);
         return recipe;
-        
+
     } catch (error) {
         console.error('Scraping error:', error);
         throw error;

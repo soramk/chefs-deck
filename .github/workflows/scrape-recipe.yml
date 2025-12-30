@@ -4,17 +4,27 @@ on:
   workflow_dispatch:
     inputs:
       url:
-        description: 'Recipe URL to scrape'
+        description: "Recipe URL to scrape"
         required: true
         type: string
       use_gemini:
-        description: 'Use Gemini API for extraction'
+        description: "Use Gemini API for extraction"
         required: false
-        default: 'false'
+        default: "false"
         type: choice
         options:
-          - 'true'
-          - 'false'
+          - "true"
+          - "false"
+      gemini_model:
+        description: "Gemini model to use"
+        required: false
+        default: "gemini-1.5-flash"
+        type: string
+      gemini_api_key:
+        description: "Gemini API Key (Optional if set in Secrets)"
+        required: false
+        default: ""
+        type: string
 
 jobs:
   scrape:
@@ -26,7 +36,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: Install dependencies
         run: |
@@ -34,11 +44,12 @@ jobs:
 
       - name: Run scraping script
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_API_KEY: ${{ github.event.inputs.gemini_api_key || secrets.GEMINI_API_KEY }}
           RECIPE_URL: ${{ github.event.inputs.url }}
           USE_GEMINI: ${{ github.event.inputs.use_gemini }}
+          GEMINI_MODEL: ${{ github.event.inputs.gemini_model }}
         run: |
-          node scripts/scrape-recipe.js "$RECIPE_URL" "$USE_GEMINI"
+          node scripts/scrape-recipe.js "$RECIPE_URL" "$USE_GEMINI" "$GEMINI_MODEL"
 
       - name: Generate recipes.json
         run: |
@@ -51,4 +62,3 @@ jobs:
           git add data/ api/
           git diff --staged --quiet || git commit -m "Add recipe: ${{ github.event.inputs.url }}"
           git push
-
