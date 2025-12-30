@@ -162,6 +162,9 @@ async function extractWithGemini(html, url) {
     }
 
     const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+    // プレビューモデル等に対応するため v1beta を使用
+    const modelOptions = { model: GEMINI_MODEL || 'gemini-1.5-flash', apiVersion: 'v1beta' };
+    const model = genAI.getGenerativeModel(modelOptions);
 
     // HTMLからテキストを抽出（簡易版）
     const $ = cheerio.load(html);
@@ -184,10 +187,6 @@ ${text}
   "steps": ["手順1", "手順2", ...],
   "baseServings": 2
 }`;
-
-    // モデルを指定
-    const modelName = GEMINI_MODEL || 'gemini-1.5-flash';
-    const model = genAI.getGenerativeModel({ model: modelName });
 
     try {
         const result = await model.generateContent(prompt);
@@ -288,4 +287,3 @@ scrapeRecipe(RECIPE_URL)
         console.error('Failed to scrape recipe:', error);
         process.exit(1);
     });
-

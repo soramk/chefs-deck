@@ -761,7 +761,15 @@
                     });
 
                     if (response.ok) {
-                        showNotification("スクレイピングを開始しました。完了までお待ちください...");
+                        const actionsUrl = `https://github.com/${repoOwner}/${repoName}/actions`;
+                        showNotification(
+                            <span>
+                                スクレイピングを開始しました。<br />
+                                <a href={actionsUrl} target="_blank" className="underline font-bold text-indigo-300 hover:text-indigo-200">
+                                    進捗をActionsで確認する
+                                </a>
+                            </span>
+                        );
                         setImportUrl("");
 
                         // 60秒後にレシピを再読み込み（ワークフロー完了を待つ）
@@ -961,7 +969,7 @@
                                     <div className="text-xs mt-3 text-indigo-200 opacity-70 space-y-1">
                                         <p>※GitHub Actionsページで手動実行してください。URLとオプションを入力して実行します。</p>
                                         <p className="opacity-80">
-                                            {"💡 UIでAPIキーを入力していない場合は、リポジリのSettings > Secrets and variables > Actionsで"}
+                                            {"💡 UIでAPIキーを入力していない場合は、リポジトリのSettings > Secrets and variables > Actionsで"}
                                             <code className="bg-white/20 px-1 rounded mx-1">GEMINI_API_KEY</code>{"を設定してください。"}
                                         </p>
                                     </div>
