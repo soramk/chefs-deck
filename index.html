@@ -181,19 +181,33 @@
             const [isExpanded, setIsExpanded] = useState(false);
             const [scaleFactor, setScaleFactor] = useState(1);
 
-            const currentServings = Math.round((recipe.baseServings || 2) * scaleFactor * 10) / 10;
+            // 入力用の一時的な状態（空入力を許可するため文字列で管理）
+            const [servingInput, setServingInput] = useState((recipe.baseServings || 2).toString());
+            const [editingIngredient, setEditingIngredient] = useState({ index: -1, value: "" });
+
+            // 外部からscaleFactorやrecipeが変わった時に表示入力を同期
+            useEffect(() => {
+                const currentServings = Math.round((recipe.baseServings || 2) * scaleFactor * 10) / 10;
+                setServingInput(currentServings.toString());
+            }, [scaleFactor, recipe.baseServings]);
 
             const handleServingChange = (e) => {
-                const val = parseFloat(e.target.value);
-                if (val > 0) {
+                const valStr = e.target.value;
+                setServingInput(valStr); // 文字列としてそのままセット（空文字も許可）
+
+                const val = parseFloat(valStr);
+                if (!isNaN(val) && val > 0) {
                     const base = recipe.baseServings || 2;
                     setScaleFactor(val / base);
                 }
             };
 
-            const handleIngredientAmountChange = (baseAmount, newVal) => {
-                if (baseAmount && newVal > 0) {
-                    setScaleFactor(newVal / baseAmount);
+            const handleIngredientAmountChange = (index, baseAmount, newValStr) => {
+                setEditingIngredient({ index, value: newValStr });
+
+                const val = parseFloat(newValStr);
+                if (baseAmount && !isNaN(val) && val > 0) {
+                    setScaleFactor(val / baseAmount);
                 }
             };
 
@@ -253,10 +267,10 @@
                                             <div className="relative">
                                                 <input
                                                     type="number"
-                                                    value={currentServings}
+                                                    value={servingInput}
                                                     onChange={handleServingChange}
                                                     step="0.5"
-                                                    min="0.5"
+                                                    min="0"
                                                     className="w-full pl-8 pr-2 py-1.5 rounded bg-white border border-indigo-200 text-indigo-900 font-bold focus:ring-2 focus:ring-indigo-300 outline-none text-center"
                                                 />
                                                 <IconUsers className="w-4 h-4 text-indigo-400 absolute left-2 top-1/2 -translate-y-1/2" />
@@ -287,8 +301,9 @@
                                                         {isNumber ? (
                                                             <input
                                                                 type="number"
-                                                                value={calculatedAmount}
-                                                                onChange={(e) => handleIngredientAmountChange(ing.amount, e.target.value)}
+                                                                value={editingIngredient.index === idx ? editingIngredient.value : calculatedAmount}
+                                                                onChange={(e) => handleIngredientAmountChange(idx, ing.amount, e.target.value)}
+                                                                onBlur={() => setEditingIngredient({ index: -1, value: "" })}
                                                                 className="w-16 text-right font-bold text-slate-800 bg-transparent border-b border-transparent hover:border-slate-300 focus:border-indigo-500 focus:bg-white outline-none transition-all py-0.5 px-1 rounded text-sm"
                                                             />
                                                         ) : (
