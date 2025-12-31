@@ -1,0 +1,46 @@
+name: Save Deck Changes
+
+on:
+    workflow_dispatch:
+        inputs:
+            deck_id:
+                description: "Deck ID (timestamp)"
+                required: true
+                type: string
+            deck_json:
+                description: "Full deck JSON string"
+                required: true
+                type: string
+
+jobs:
+    save-deck:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20"
+
+            - name: Save deck file
+              run: |
+                  mkdir -p data/decks
+                  echo '${{ github.event.inputs.deck_json }}' > data/decks/deck-${{ github.event.inputs.deck_id }}.json
+
+            - name: Generate json files
+              run: |
+                  npm install
+                  node api/recipes.json.js
+                  node api/decks.json.js
+
+            - name: Commit and push
+              run: |
+                  git config --local user.email "action@github.com"
+                  git config --local user.name "GitHub Action"
+                  git add data/ api/
+                  git diff --staged --quiet || git commit -m "Update deck: ${{ github.event.inputs.deck_id }}"
+                  git push

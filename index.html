@@ -104,6 +104,20 @@
             </svg>
         );
 
+        const IconFolder = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z" />
+            </svg>
+        );
+
+        const IconBookmark = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
+            </svg>
+        );
+
+
+
         const IconPlus = ({ className }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
                 <line x1="12" y1="5" x2="12" y2="19" />
@@ -293,6 +307,13 @@
                 setServingInput(currentServings.toString());
             }, [scaleFactor, recipe.baseServings]);
 
+            // Apply global scale if provided
+            useEffect(() => {
+                if (window.appGlobalScale !== undefined && window.appSelectedDeckId !== null) {
+                    setScaleFactor(window.appGlobalScale);
+                }
+            }, [window.appGlobalScale, window.appSelectedDeckId]);
+
             const handleServingChange = (e) => {
                 const valStr = e.target.value;
                 setServingInput(valStr); // 文字列としてそのままセット（空文字も許可）
@@ -331,7 +352,7 @@
                                 >
                                     <IconHeart className="w-5 h-5" fill={recipe.isFavorite ? "currentColor" : "none"} />
                                 </button>
-                                <button onClick={toggleExpand} className="text-slate-400 hover:text-brand-orange p-1">
+                                <button onClick={toggleExpand} className="text-slate-500 hover:text-brand-orange p-1">
                                     {isExpanded ? <IconChevronUp className="w-5 h-5" /> : <IconChevronDown className="w-5 h-5" />}
                                 </button>
                             </div>
@@ -361,7 +382,7 @@
                                 <div className="bg-brand-orange/5 rounded-lg p-3 mb-4 border border-brand-orange/10">
                                     <div className="flex items-center justify-between mb-2">
                                         <label className="text-xs font-bold text-brand-orange uppercase tracking-wide flex items-center gap-1">
-                                            <IconCalculator className="w-3 h-3" /> Smart Scaling
+                                            <IconCalculator className="w-3 h-3" /> スマートスケーリング
                                         </label>
                                         <button
                                             onClick={() => setScaleFactor(1)}
@@ -393,8 +414,8 @@
 
                                 <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
                                     <div className="space-y-1">
-                                        <label className="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">
-                                            Ingredients
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-widest block mb-1 px-1">
+                                            材料
                                         </label>
                                         {recipe.ingredients.map((ing, idx) => {
                                             const isNumber = ing.amount && !isNaN(parseFloat(ing.amount));
@@ -431,7 +452,7 @@
                                                         ) : (
                                                             <span className="text-slate-500 text-xs">{ing.amount}</span>
                                                         )}
-                                                        <span className="text-slate-400 text-xs w-10 text-left whitespace-nowrap overflow-hidden">{ing.unit}</span>
+                                                        <span className="text-slate-500 text-xs w-10 text-left whitespace-nowrap overflow-hidden">{ing.unit}</span>
                                                     </div>
                                                 </div>
                                             );
@@ -440,8 +461,8 @@
 
                                     {recipe.steps && recipe.steps.length > 0 && (
                                         <div className="mt-4 pt-4 border-t border-slate-100">
-                                            <label className="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-2 px-1">
-                                                Directions
+                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-widest block mb-2 px-1">
+                                                料理手順
                                             </label>
                                             <div className="space-y-3">
                                                 {recipe.steps.map((step, idx) => (
@@ -461,7 +482,7 @@
                                     {recipe.notes && (
                                         <div className="mt-4 pt-4 border-t border-slate-100">
                                             <label className="text-[10px] font-bold text-brand-orange uppercase tracking-widest block mb-1 px-1">
-                                                Notes
+                                                メモ・備考
                                             </label>
                                             <p className="text-xs text-slate-500 italic bg-brand-orange/5 p-3 rounded-lg border border-brand-orange/10">
                                                 {recipe.notes}
@@ -480,7 +501,7 @@
                                 className="text-slate-400 hover:text-brand-orange transition-colors flex items-center gap-1 text-xs"
                                 title="元のサイトを開く"
                             >
-                                <IconExternalLink className="w-4 h-4" /> Source
+                                <IconExternalLink className="w-4 h-4" /> 取得元ページ
                             </a>
                             <div className="flex gap-2">
                                 <button
@@ -522,7 +543,7 @@
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in duration-200">
                         <div className="bg-brand-gradient p-6 text-white flex justify-between items-center">
                             <h2 className="text-xl font-bold font-brand flex items-center gap-2">
-                                <IconSettings className="w-6 h-6" /> Settings
+                                <IconSettings className="w-6 h-6" /> 設定
                             </h2>
                             <button onClick={onClose} className="hover:bg-white/20 p-1 rounded-full transition-colors">
                                 <IconX className="w-6 h-6" />
@@ -552,7 +573,7 @@
                             {activeTab === "ai" ? (
                                 <div className="space-y-4 fade-in">
                                     <div>
-                                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 pl-1">API Key</label>
+                                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 pl-1">APIキー</label>
                                         <input
                                             type="password"
                                             className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none transition-all text-sm"
@@ -562,7 +583,7 @@
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 pl-1">Default Model</label>
+                                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 pl-1">デフォルトモデル</label>
                                         <input
                                             type="text"
                                             className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none transition-all text-sm"
@@ -575,7 +596,7 @@
                             ) : (
                                 <div className="space-y-4 fade-in">
                                     <div>
-                                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 pl-1">Personal Access Token</label>
+                                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 pl-1">アクセストークン (PAT)</label>
                                         <input
                                             type="password"
                                             className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none transition-all text-sm"
@@ -586,7 +607,7 @@
                                     </div>
                                     <div className="grid grid-cols-2 gap-3">
                                         <div>
-                                            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 pl-1">Owner</label>
+                                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 pl-1">オーナー (ユーザー名)</label>
                                             <input
                                                 type="text"
                                                 className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none transition-all text-sm"
@@ -596,7 +617,7 @@
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 pl-1">Repo</label>
+                                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 pl-1">リポジトリ名</label>
                                             <input
                                                 type="text"
                                                 className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none transition-all text-sm"
@@ -611,8 +632,8 @@
                         </div>
 
                         <div className="p-6 bg-slate-50 border-t border-slate-100 flex gap-3">
-                            <button onClick={onClose} className="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-100 rounded-xl transition-colors">Cancel</button>
-                            <button onClick={handleSave} className="flex-1 py-3 text-sm font-bold text-white bg-brand-orange hover:bg-brand-gold rounded-xl shadow-md transition-colors">Save Changes</button>
+                            <button onClick={onClose} className="flex-1 py-3 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors">キャンセル</button>
+                            <button onClick={handleSave} className="flex-1 py-3 text-sm font-bold text-white bg-brand-orange hover:bg-brand-gold rounded-xl shadow-md transition-colors">設定を保存</button>
                         </div>
                     </div>
                 </div>
@@ -620,6 +641,12 @@
         };
 
         // --- Unit Conversions (Delish Kitchen) ---
+        const IconCheck = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <polyline points="20 6 9 17 4 12" />
+            </svg>
+        );
+
         const UNIT_CONVERSIONS = {
             "水": { tbsp: 15, tsp: 5, cup: 200 },
             "酒": { tbsp: 15, tsp: 5, cup: 200 },
@@ -706,7 +733,7 @@
                     <div className="absolute top-0 left-0 w-full h-1.5 bg-brand-gradient"></div>
                     <h2 className="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2 font-brand">
                         <IconEdit className="text-brand-orange" />
-                        {formData.id ? 'Edit Recipe' : 'Add Recipe'}
+                        {formData.id ? 'レシピの編集' : 'レシピの追加'}
                     </h2>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
@@ -776,13 +803,13 @@
 
                         <div>
                             <div className="flex justify-between items-center mb-2">
-                                <label className="text-lg font-bold text-slate-700 font-brand">Ingredients</label>
+                                <label className="text-lg font-bold text-slate-700 font-brand">材料</label>
                                 <button type="button" onClick={addIngredient} className="text-sm text-brand-orange hover:text-brand-gold font-bold flex items-center gap-1">
                                     <IconPlus className="w-4 h-4" /> 追加
                                 </button>
                             </div>
                             <div className="space-y-2 bg-slate-50 p-4 rounded-xl border border-slate-200">
-                                <div className="grid grid-cols-12 gap-2 text-xs font-bold text-slate-400 mb-1 px-1">
+                                <div className="grid grid-cols-12 gap-2 text-xs font-bold text-slate-500 mb-1 px-1">
                                     <div className="col-span-6">材料名</div>
                                     <div className="col-span-3">分量 (数値)</div>
                                     <div className="col-span-2">単位</div>
@@ -828,7 +855,7 @@
 
                         <div>
                             <div className="flex justify-between items-center mb-2">
-                                <label className="text-lg font-bold text-slate-700 font-brand">Directions</label>
+                                <label className="text-lg font-bold text-slate-700 font-brand">料理手順</label>
                                 <button type="button" onClick={addStep} className="text-sm text-brand-orange hover:text-brand-gold font-bold flex items-center gap-1">
                                     <IconPlus className="w-4 h-4" /> 追加
                                 </button>
@@ -876,12 +903,22 @@
 
         const App = () => {
             const [recipes, setRecipes] = useState([]);
+            const [decks, setDecks] = useState([]);
+            const [selectedDeckId, setSelectedDeckId] = useState(null);
+            const [globalScale, setGlobalScale] = useState(1);
             const [view, setView] = useState("list");
             const [editingRecipe, setEditingRecipe] = useState(null);
+            const [isDeckCreatorOpen, setIsDeckCreatorOpen] = useState(false);
+            const [deckFormData, setDeckFormData] = useState({ name: "", recipeIds: [] });
+            const [isSidebarOpen, setIsSidebarOpen] = useState(true);
             const [importUrl, setImportUrl] = useState("");
             const [useGemini, setUseGemini] = useState(false);
             const [isLoading, setIsLoading] = useState(false);
             const [notification, setNotification] = useState(null);
+
+            // Make global scale available to children (using window for simple sync in this architecture)
+            window.appGlobalScale = globalScale;
+            window.appSelectedDeckId = selectedDeckId;
 
             // Search and Filter State
             const [searchTerm, setSearchTerm] = useState("");
@@ -960,60 +997,76 @@
             };
 
             const filteredRecipes = useMemo(() => {
-                return recipes.filter(r => {
+                let list = recipes;
+
+                // Deck Filter
+                if (selectedDeckId) {
+                    const deck = decks.find(d => d.id === selectedDeckId);
+                    if (deck) {
+                        list = list.filter(r => deck.recipeIds.includes(r.id));
+                    }
+                }
+
+                return list.filter(r => {
                     const matchesSearch = r.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                         (r.ingredients && r.ingredients.some(i => i.name.toLowerCase().includes(searchTerm.toLowerCase()))) ||
                         (r.tags && r.tags.some(t => t.toLowerCase().includes(searchTerm.toLowerCase())));
                     const matchesFavorite = !showOnlyFavorites || r.isFavorite;
                     return matchesSearch && matchesFavorite;
                 });
-            }, [recipes, searchTerm, showOnlyFavorites]);
+            }, [recipes, searchTerm, showOnlyFavorites, selectedDeckId, decks]);
 
-            // レシピデータを読み込む
             const loadRecipes = async () => {
                 try {
-                    // api/recipes.jsonから読み込む（キャッシュ回避のためタイムスタンプ付与）
-                    const response = await fetch(`api/recipes.json?t=${Date.now()}`);
-                    if (response.ok) {
-                        const data = await response.json();
-                        const migratedData = Array.isArray(data) ? data.map(migrateRecipe) : [];
-                        setRecipes(migratedData);
-                    } else if (response.status === 404) {
-                        // 404エラー: ファイルがまだ存在しない（初回実行時）
-                        console.log('recipes.json not found, using empty array');
-                        setRecipes([]);
-                    } else {
-                        // その他のエラー: localStorageから読み込む
-                        const saved = localStorage.getItem("chefsDeckRecipes");
-                        if (saved) {
-                            try {
-                                const loadedData = JSON.parse(saved);
-                                const migratedData = loadedData.map(migrateRecipe);
-                                setRecipes(migratedData);
-                            } catch (e) {
-                                console.error("Failed to load from localStorage:", e);
-                                setRecipes([]);
-                            }
-                        } else {
-                            setRecipes([]);
-                        }
+                    const [recipeRes, deckRes] = await Promise.all([
+                        fetch(`api/recipes.json?t=${Date.now()}`),
+                        fetch(`api/decks.json?t=${Date.now()}`)
+                    ]);
+
+                    if (recipeRes.ok) {
+                        const data = await recipeRes.json();
+                        setRecipes(Array.isArray(data) ? data.map(migrateRecipe) : []);
+                    }
+
+                    if (deckRes.ok) {
+                        const data = await deckRes.json();
+                        setDecks(Array.isArray(data) ? data : []);
                     }
                 } catch (error) {
-                    console.error("Failed to load recipes:", error);
-                    // フォールバック: localStorageから読み込む
-                    const saved = localStorage.getItem("chefsDeckRecipes");
-                    if (saved) {
-                        try {
-                            const loadedData = JSON.parse(saved);
-                            const migratedData = loadedData.map(migrateRecipe);
-                            setRecipes(migratedData);
-                        } catch (e) {
-                            console.error("Failed to load from localStorage:", e);
-                            setRecipes([]);
-                        }
-                    } else {
-                        setRecipes([]);
-                    }
+                    console.error("Failed to load data:", error);
+                }
+            };
+
+            const handleCreateDeck = async () => {
+                if (!deckFormData.name || deckFormData.recipeIds.length === 0) {
+                    showNotification("デッキ名とレシピを1つ以上選択してください");
+                    return;
+                }
+
+                const newDeck = {
+                    id: Date.now().toString(),
+                    name: deckFormData.name,
+                    recipeIds: deckFormData.recipeIds,
+                    createdAt: new Date().toISOString()
+                };
+
+                setDecks([...decks, newDeck]);
+                setIsDeckCreatorOpen(false);
+                setDeckFormData({ name: "", recipeIds: [] });
+                showNotification("新しいデッキを作成しました");
+
+                await dispatchWorkflow('save-deck.yml', {
+                    deck_id: newDeck.id,
+                    deck_json: JSON.stringify(newDeck)
+                });
+            };
+
+            const deleteDeck = async (id) => {
+                if (confirm("このデッキを削除しますか？")) {
+                    setDecks(decks.filter(d => d.id !== id));
+                    if (selectedDeckId === id) setSelectedDeckId(null);
+                    showNotification("デッキを削除しました");
+                    // TODO: delete-deck workflow
                 }
             };
 
@@ -1279,12 +1332,10 @@
                 <div className="min-h-screen pb-10 font-sans text-slate-600">
                     <header className="bg-white border-b border-slate-200 sticky top-0 z-10 shadow-sm backdrop-blur-md bg-white/90">
                         <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-                            <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setView("list")}>
-                                <div className="bg-brand-gradient text-white p-2.5 rounded-xl shadow-lg group-hover:scale-105 transition-all">
-                                    <IconLayers className="w-6 h-6" />
-                                </div>
+                            <div className="flex items-center gap-2 cursor-pointer group" onClick={() => setView("list")}>
+                                <img src="logo.png" alt="Chef's Deck Logo" className="h-10 w-auto group-hover:scale-105 transition-all shadow-sm rounded-lg" />
                                 <div className="flex flex-col">
-                                    <h1 className="text-xl font-bold text-slate-800 tracking-tight leading-none font-brand">Chef's Deck</h1>
+                                    <h1 className="text-lg font-bold text-slate-800 tracking-tight leading-none font-brand">Chef's Deck</h1>
                                     <span className="text-[10px] font-bold text-brand-orange uppercase tracking-widest leading-none mt-1">Recipe Collection</span>
                                 </div>
                             </div>
@@ -1326,149 +1377,235 @@
 
                     <main className="max-w-5xl mx-auto px-4 mt-8">
 
-                        {view === "list" && (
-                            <div className="bg-gradient-to-br from-brand-orange to-brand-red rounded-2xl p-6 md:p-10 mb-10 shadow-lg text-white relative overflow-hidden">
-                                <div className="absolute top-0 right-0 opacity-10 transform translate-x-10 -translate-y-10">
-                                    <IconLayers className="w-64 h-64" />
-                                </div>
-
-                                <div className="relative z-10 max-w-2xl">
-                                    <h2 className="text-2xl md:text-3xl font-bold mb-2 font-brand">Build Your Ultimate Collection.</h2>
-                                    <p className="mb-6 text-orange-50/80 font-medium leading-relaxed max-w-lg">
-                                        Web上のレシピをカード化。人数に合わせて分量を自動計算する、あなただけのカードデッキ。
-                                    </p>
-
-                                    <form onSubmit={handleImport} className="space-y-3">
-                                        <div className="flex flex-col sm:flex-row gap-3">
-                                            <div className="flex-1 relative text-slate-800">
-                                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-                                                    <IconSearch className="w-5 h-5" />
-                                                </div>
-                                                <input
-                                                    type="url"
-                                                    className="w-full pl-10 pr-4 py-3 rounded-xl border-0 focus:ring-4 focus:ring-indigo-300 outline-none shadow-sm font-medium"
-                                                    placeholder="Paste recipe URL here..."
-                                                    value={importUrl}
-                                                    onChange={(e) => setImportUrl(e.target.value)}
-                                                />
-                                            </div>
-                                            <button
-                                                type="submit"
-                                                disabled={isLoading}
-                                                className="bg-white text-indigo-600 font-bold py-3 px-6 rounded-xl hover:bg-indigo-50 transition-colors shadow-sm disabled:opacity-70 flex items-center justify-center gap-2 min-w-[140px]"
-                                            >
-                                                {isLoading ? <IconLoader className="w-5 h-5 animate-spin" /> : "カード化"}
+                        {view === "list" ? (
+                            <div className="flex flex-col lg:flex-row gap-8">
+                                {/* Sidebar */}
+                                <aside className={`${isSidebarOpen ? 'w-64' : 'w-0'} transition-all overflow-hidden hidden lg:block`}>
+                                    <div className="bg-white rounded-2xl p-6 border border-slate-200 sticky top-24">
+                                        <div className="flex items-center justify-between mb-6">
+                                            <h4 className="text-sm font-bold text-slate-400 uppercase tracking-widest">デッキ一覧</h4>
+                                            <button onClick={() => setIsDeckCreatorOpen(true)} className="text-brand-orange hover:text-brand-gold">
+                                                <IconPlus className="w-5 h-5" />
                                             </button>
                                         </div>
-                                        <div className="flex items-center gap-4 text-white">
-                                            <div className="flex items-center gap-2">
-                                                <input
-                                                    type="checkbox"
-                                                    id="useGemini"
-                                                    checked={useGemini}
-                                                    onChange={(e) => setUseGemini(e.target.checked)}
-                                                    className="w-4 h-4 rounded border-white/30 bg-white/10 checked:bg-brand-orange focus:ring-2 focus:ring-brand-orange/30 overflow-hidden"
-                                                />
-                                                <label htmlFor="useGemini" className="text-sm cursor-pointer whitespace-nowrap">
-                                                    Gemini APIを使用
-                                                </label>
-                                            </div>
+                                        <nav className="space-y-2">
+                                            <button
+                                                onClick={() => setSelectedDeckId(null)}
+                                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${!selectedDeckId ? 'bg-brand-orange text-white shadow-md' : 'text-slate-500 hover:bg-slate-50'}`}
+                                            >
+                                                <IconLayers className="w-5 h-5" />
+                                                すべてのレシピ
+                                            </button>
+                                            <div className="h-px bg-slate-100 my-4"></div>
+                                            {decks.map(deck => (
+                                                <div key={deck.id} className="group relative">
+                                                    <button
+                                                        onClick={() => setSelectedDeckId(deck.id)}
+                                                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${selectedDeckId === deck.id ? 'bg-slate-800 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50'}`}
+                                                    >
+                                                        <IconBookmark className="w-5 h-5 opacity-70" />
+                                                        <span className="truncate">{deck.name}</span>
+                                                    </button>
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); deleteDeck(deck.id); }}
+                                                        className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-red-500 transition-all"
+                                                    >
+                                                        <IconTrash className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </nav>
+                                    </div>
+                                </aside>
 
-                                            {useGemini && (
-                                                <div className="flex flex-col sm:flex-row gap-3 flex-1 fade-in">
-                                                    <div className="flex-1 relative">
+                                <div className="flex-1">
+                                    <div className="bg-gradient-to-br from-brand-orange to-brand-red rounded-2xl p-6 md:p-10 mb-10 shadow-lg text-white relative overflow-hidden">
+                                        <div className="absolute top-1/2 right-0 opacity-20 transform -translate-y-1/2 translate-x-10">
+                                            <img src="logo.png" alt="Hero Logo" className="w-80 h-auto" />
+                                        </div>
+
+                                        <div className="relative z-10 max-w-2xl">
+                                            <h2 className="text-2xl md:text-3xl font-bold mb-2 font-brand">究極のレシピデッキを、あなたの手に。</h2>
+                                            <p className="mb-6 text-white font-medium leading-relaxed max-w-lg">
+                                                Web上のレシピをカード化。人数に合わせて分量を自動計算する、あなただけのカードデッキ。
+                                            </p>
+
+                                            <form onSubmit={handleImport} className="space-y-3">
+                                                <div className="flex flex-col sm:flex-row gap-3">
+                                                    <div className="flex-1 relative text-slate-800">
+                                                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">
+                                                            <IconSearch className="w-5 h-5" />
+                                                        </div>
                                                         <input
-                                                            type="password"
-                                                            placeholder="Gemini API Key..."
-                                                            className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-1.5 text-xs text-white placeholder-white/50 focus:bg-white/20 outline-none transition-all"
-                                                            value={settings.geminiApiKey}
-                                                            onChange={(e) => {
-                                                                const newSettings = { ...settings, geminiApiKey: e.target.value };
-                                                                handleUpdateSettings(newSettings);
-                                                            }}
+                                                            type="url"
+                                                            className="w-full pl-10 pr-4 py-3 rounded-xl border-0 outline-none shadow-sm font-medium"
+                                                            placeholder="レシピURLをここに貼り付け"
+                                                            value={importUrl}
+                                                            onChange={(e) => setImportUrl(e.target.value)}
                                                         />
                                                     </div>
-                                                    <div className="relative">
-                                                        <select
-                                                            className="bg-white/10 border border-white/20 rounded-lg px-3 py-1.5 text-xs text-white focus:bg-white/20 outline-none transition-all cursor-pointer appearance-none pr-8"
-                                                            value={settings.selectedModel}
-                                                            onChange={(e) => {
-                                                                const newSettings = { ...settings, selectedModel: e.target.value };
-                                                                handleUpdateSettings(newSettings);
-                                                            }}
-                                                        >
-                                                            {availableModels.map(m => <option key={m} value={m} className="text-slate-800">{m}</option>)}
-                                                        </select>
-                                                        <IconChevronDown className="w-3 h-3 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none opacity-50" />
+                                                    <button
+                                                        type="submit"
+                                                        disabled={isLoading}
+                                                        className="bg-white text-brand-orange font-bold py-3 px-6 rounded-xl hover:bg-orange-50 transition-colors shadow-sm disabled:opacity-70 flex items-center justify-center gap-2 min-w-[140px]"
+                                                    >
+                                                        {isLoading ? <IconLoader className="w-5 h-5 animate-spin" /> : "カード化"}
+                                                    </button>
+                                                </div>
+                                                <div className="flex items-center gap-4 text-white">
+                                                    <div className="flex items-center gap-2">
+                                                        <input
+                                                            type="checkbox"
+                                                            id="useGemini"
+                                                            checked={useGemini}
+                                                            onChange={(e) => setUseGemini(e.target.checked)}
+                                                            className="w-4 h-4 rounded border-white/30 bg-white/10 checked:bg-brand-orange focus:ring-2 focus:ring-brand-orange/30 overflow-hidden"
+                                                        />
+                                                        <label htmlFor="useGemini" className="text-sm cursor-pointer whitespace-nowrap">
+                                                            Gemini APIを使用
+                                                        </label>
+                                                    </div>
+
+                                                    {useGemini && (
+                                                        <div className="flex flex-col sm:flex-row gap-3 flex-1 fade-in">
+                                                            <div className="flex-1 relative">
+                                                                <input
+                                                                    type="password"
+                                                                    placeholder="Gemini API Key..."
+                                                                    className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-1.5 text-xs text-white placeholder-white/50 focus:bg-white/20 outline-none transition-all"
+                                                                    value={settings.geminiApiKey}
+                                                                    onChange={(e) => {
+                                                                        const newSettings = { ...settings, geminiApiKey: e.target.value };
+                                                                        handleUpdateSettings(newSettings);
+                                                                    }}
+                                                                />
+                                                            </div>
+                                                            <div className="relative">
+                                                                <select
+                                                                    className="bg-white/10 border border-white/20 rounded-lg px-3 py-1.5 text-xs text-white focus:bg-white/20 outline-none transition-all cursor-pointer appearance-none pr-8"
+                                                                    value={settings.selectedModel}
+                                                                    onChange={(e) => {
+                                                                        const newSettings = { ...settings, selectedModel: e.target.value };
+                                                                        handleUpdateSettings(newSettings);
+                                                                    }}
+                                                                >
+                                                                    {availableModels.map(m => <option key={m} value={m} className="text-slate-800">{m}</option>)}
+                                                                </select>
+                                                                <IconChevronDown className="w-3 h-3 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none opacity-50" />
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </form>
+                                            <div className="text-xs mt-3 text-orange-200/50 space-y-1">
+                                                <p>※GitHub Actionsの設定が必要です。PATとリポジトリ名を確認してください。</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Multi Scaling View */}
+                                    {selectedDeckId && (
+                                        <div className="bg-slate-800 rounded-2xl p-6 mb-8 text-white flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-xl fade-in border border-slate-700">
+                                            <div className="flex items-center gap-4">
+                                                <div className="p-3 bg-brand-orange rounded-xl shadow-lg shadow-brand-orange/20">
+                                                    <IconBookmark className="w-6 h-6 text-white" />
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-xl font-bold font-brand">{decks.find(d => d.id === selectedDeckId)?.name}</h3>
+                                                    <p className="text-slate-400 text-xs mt-1">デッキ全体のスケーリングを調整中</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-4 bg-slate-700/50 p-2 rounded-2xl border border-slate-600">
+                                                <div className="px-4 border-r border-slate-600">
+                                                    <div className="text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-1">Scale Factor</div>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-2xl font-black text-brand-orange">×{globalScale}</span>
                                                     </div>
                                                 </div>
+                                                <div className="flex gap-2">
+                                                    {[0.5, 1, 1.5, 2, 3, 4].map(s => (
+                                                        <button
+                                                            key={s}
+                                                            onClick={() => setGlobalScale(s)}
+                                                            className={`w-10 h-10 rounded-xl text-xs font-bold transition-all ${globalScale === s ? 'bg-brand-orange text-white' : 'bg-slate-600 text-slate-400 hover:bg-slate-500 hover:text-white'}`}
+                                                        >
+                                                            {s}
+                                                        </button>
+                                                    ))}
+                                                    <div className="relative w-24">
+                                                        <input
+                                                            type="number"
+                                                            step="0.1"
+                                                            min="0.1"
+                                                            value={globalScale}
+                                                            onChange={(e) => setGlobalScale(parseFloat(e.target.value) || 1)}
+                                                            className="w-full h-10 rounded-xl bg-slate-900 border-none text-center font-bold text-sm focus:ring-2 focus:ring-brand-orange transition-all"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Card List Area */}
+                                    <div>
+                                        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                                            <div className="flex items-center gap-4">
+                                                <h3 className="text-xl font-extrabold text-slate-800 font-brand flex items-center gap-2">
+                                                    <IconLayers className="w-6 h-6 text-brand-orange" />
+                                                    デッキ構成
+                                                    <span className="text-slate-300 font-light ml-1">/</span>
+                                                    <span className="bg-slate-100 text-slate-500 px-2.5 py-0.5 rounded-full text-xs font-bold">{filteredRecipes.length}</span>
+                                                </h3>
+                                                <button
+                                                    onClick={() => setShowOnlyFavorites(!showOnlyFavorites)}
+                                                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${showOnlyFavorites ? 'bg-brand-red text-white shadow-md' : 'bg-slate-100 text-slate-400 hover:bg-slate-200'}`}
+                                                >
+                                                    <IconHeart className="w-3.5 h-3.5" fill={showOnlyFavorites ? "currentColor" : "none"} />
+                                                    お気に入り
+                                                </button>
+                                            </div>
+
+                                            <div className="flex flex-1 max-w-md items-center gap-2">
+                                                <div className="relative flex-1">
+                                                    <IconSearch className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                                                    <input
+                                                        type="text"
+                                                        placeholder="レシピや材料を検索..."
+                                                        className="w-full pl-10 pr-4 py-2 bg-slate-100 border-none rounded-xl text-sm focus:ring-2 focus:ring-brand-orange transition-all"
+                                                        value={searchTerm}
+                                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                                    />
+                                                </div>
+                                                <button
+                                                    onClick={loadRecipes}
+                                                    className="bg-white border border-slate-200 text-slate-500 p-2 rounded-xl hover:text-brand-orange hover:border-brand-orange transition-all shadow-sm"
+                                                    title="デッキを更新"
+                                                >
+                                                    <IconRefresh className="w-5 h-5" />
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                                            {filteredRecipes.length === 0 ? (
+                                                <div className="col-span-full text-center py-20 text-slate-400 bg-white rounded-3xl border-2 border-dashed border-slate-100">
+                                                    <IconLayers className="w-16 h-16 mx-auto mb-4 opacity-10" />
+                                                    <p className="font-medium">{searchTerm || showOnlyFavorites ? "該当するカードが見つかりません" : "デッキが空です"}</p>
+                                                </div>
+                                            ) : (
+                                                filteredRecipes.map(recipe => (
+                                                    <RecipeCard
+                                                        key={recipe.id}
+                                                        recipe={recipe}
+                                                        onDelete={handleDelete}
+                                                        onEdit={handleEdit}
+                                                        onToggleFavorite={toggleFavorite}
+                                                    />
+                                                ))
                                             )}
                                         </div>
-                                    </form>
-                                    <div className="text-xs mt-3 text-orange-200/50 space-y-1">
-                                        <p>※GitHub Actionsの設定が必要です。PATとリポジトリ名を確認してください。</p>
                                     </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {view === "list" ? (
-                            <div>
-                                <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-                                    <div className="flex items-center gap-4">
-                                        <h3 className="text-xl font-extrabold text-slate-800 font-brand flex items-center gap-2">
-                                            <IconLayers className="w-6 h-6 text-brand-orange" />
-                                            Your Deck
-                                            <span className="text-slate-300 font-light ml-1">/</span>
-                                            <span className="bg-slate-100 text-slate-500 px-2.5 py-0.5 rounded-full text-xs font-bold">{filteredRecipes.length}</span>
-                                        </h3>
-                                        <button
-                                            onClick={() => setShowOnlyFavorites(!showOnlyFavorites)}
-                                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${showOnlyFavorites ? 'bg-brand-red text-white shadow-md' : 'bg-slate-100 text-slate-400 hover:bg-slate-200'}`}
-                                        >
-                                            <IconHeart className="w-3.5 h-3.5" fill={showOnlyFavorites ? "currentColor" : "none"} />
-                                            Favorites
-                                        </button>
-                                    </div>
-
-                                    <div className="flex flex-1 max-w-md items-center gap-2">
-                                        <div className="relative flex-1">
-                                            <IconSearch className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                                            <input
-                                                type="text"
-                                                placeholder="Search recipes or ingredients..."
-                                                className="w-full pl-10 pr-4 py-2 bg-slate-100 border-none rounded-xl text-sm focus:ring-2 focus:ring-brand-orange transition-all"
-                                                value={searchTerm}
-                                                onChange={(e) => setSearchTerm(e.target.value)}
-                                            />
-                                        </div>
-                                        <button
-                                            onClick={loadRecipes}
-                                            className="bg-white border border-slate-200 text-slate-400 p-2 rounded-xl hover:text-brand-orange hover:border-brand-orange transition-all shadow-sm"
-                                            title="Refresh Deck"
-                                        >
-                                            <IconRefresh className="w-5 h-5" />
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {filteredRecipes.length === 0 ? (
-                                        <div className="col-span-full text-center py-20 text-slate-400 bg-white rounded-3xl border-2 border-dashed border-slate-100">
-                                            <IconLayers className="w-16 h-16 mx-auto mb-4 opacity-10" />
-                                            <p className="font-medium">{searchTerm || showOnlyFavorites ? "該当するカードが見つかりません" : "デッキが空です"}</p>
-                                        </div>
-                                    ) : (
-                                        filteredRecipes.map(recipe => (
-                                            <RecipeCard
-                                                key={recipe.id}
-                                                recipe={recipe}
-                                                onDelete={handleDelete}
-                                                onEdit={handleEdit}
-                                                onToggleFavorite={toggleFavorite}
-                                            />
-                                        ))
-                                    )}
                                 </div>
                             </div>
                         ) : (
@@ -1477,6 +1614,69 @@
                                 onSave={handleSave}
                                 onCancel={() => setView("list")}
                             />
+                        )}
+
+                        {/* Deck Creator Modal */}
+                        {isDeckCreatorOpen && (
+                            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm fade-in">
+                                <div className="bg-white rounded-3xl w-full max-w-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+                                    <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+                                        <h2 className="text-xl font-bold font-brand flex items-center gap-2">
+                                            <IconBookmark className="w-6 h-6 text-brand-orange" />
+                                            新しいデッキを作成
+                                        </h2>
+                                        <button onClick={() => setIsDeckCreatorOpen(false)} className="text-slate-400 hover:text-slate-600">
+                                            <IconPlus className="w-6 h-6 rotate-45" />
+                                        </button>
+                                    </div>
+
+                                    <div className="p-6 space-y-6 overflow-y-auto custom-scrollbar">
+                                        <div>
+                                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">デッキ名</label>
+                                            <input
+                                                type="text"
+                                                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-4 focus:ring-brand-orange/10 focus:border-brand-orange outline-none transition-all font-bold"
+                                                placeholder="例：週末のフルコース"
+                                                value={deckFormData.name}
+                                                onChange={(e) => setDeckFormData(prev => ({ ...prev, name: e.target.value }))}
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 px-1">
+                                                カードを選択 ({deckFormData.recipeIds.length})
+                                            </label>
+                                            <div className="grid grid-cols-1 gap-2">
+                                                {recipes.map(recipe => {
+                                                    const isSelected = deckFormData.recipeIds.includes(recipe.id);
+                                                    return (
+                                                        <button
+                                                            key={recipe.id}
+                                                            onClick={() => {
+                                                                const newIds = isSelected
+                                                                    ? deckFormData.recipeIds.filter(id => id !== recipe.id)
+                                                                    : [...deckFormData.recipeIds, recipe.id];
+                                                                setDeckFormData(prev => ({ ...prev, recipeIds: newIds }));
+                                                            }}
+                                                            className={`flex items-center gap-3 p-3 rounded-xl border-2 transition-all text-left group ${isSelected ? 'border-brand-orange bg-brand-orange/5' : 'border-slate-100 hover:border-slate-300'}`}
+                                                        >
+                                                            <div className={`w-6 h-6 rounded-lg flex items-center justify-center transition-colors ${isSelected ? 'bg-brand-orange text-white' : 'bg-slate-100 text-transparent group-hover:text-slate-300'}`}>
+                                                                <IconCheck className="w-4 h-4" />
+                                                            </div>
+                                                            <span className={`text-sm font-bold ${isSelected ? 'text-slate-800' : 'text-slate-500'}`}>{recipe.title}</span>
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="p-6 bg-slate-50 border-t border-slate-100 flex gap-3">
+                                        <button onClick={() => setIsDeckCreatorOpen(false)} className="flex-1 py-3 text-sm font-bold text-slate-600 hover:bg-slate-200 rounded-xl transition-colors">キャンセル</button>
+                                        <button onClick={handleCreateDeck} className="flex-1 py-3 text-sm font-bold text-white bg-brand-orange hover:bg-brand-gold rounded-xl shadow-lg transition-colors">作成する</button>
+                                    </div>
+                                </div>
+                            </div>
                         )}
 
                     </main>
