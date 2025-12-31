@@ -195,11 +195,22 @@ ${text}
         const result = await model.generateContent(prompt);
         const response = await result.response;
         const responseText = response.text();
+        const usage = response.usageMetadata;
 
         // JSONを抽出
         const jsonMatch = responseText.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
-            return JSON.parse(jsonMatch[0]);
+            return {
+                data: JSON.parse(jsonMatch[0]),
+                usage: {
+                    prompt,
+                    model: GEMINI_MODEL,
+                    promptTokens: usage?.promptTokenCount || 0,
+                    candidatesTokens: usage?.candidatesTokenCount || 0,
+                    totalTokens: usage?.totalTokenCount || 0,
+                    timestamp: new Date().toISOString()
+                }
+            };
         }
         throw new Error('Failed to extract JSON from Gemini response');
     } catch (error) {
@@ -228,8 +239,19 @@ async function scrapeRecipe(url) {
         if (USE_GEMINI) {
             // Gemini APIを使用
             console.log('Using Gemini API for extraction...');
-            recipeData = await extractWithGemini(html, url);
+            const result = await extractWithGemini(html, url);
+            recipeData = result.data;
             protocolUsed = 'gemini-api';
+
+            // AIログを保存
+            const logDir = path.join(DATA_DIR, 'ai-logs');
+            if (!fs.existsSync(logDir)) fs.mkdirSync(logDir, { recursive: true });
+            const logId = Date.now();
+            fs.writeFileSync(
+                path.join(logDir, `log-${logId}.json`),
+                JSON.stringify(result.usage, null, 2),
+                'utf-8'
+            );
         } else {
             // プロトコルを順番に試す
             for (const [key, protocol] of Object.entries(SCRAPING_PROTOCOLS)) {

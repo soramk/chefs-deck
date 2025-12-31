@@ -302,6 +302,14 @@
             </svg>
         );
 
+        const IconHistory = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                <path d="M3 3v5h5" />
+                <path d="M12 7v5l4 2" />
+            </svg>
+        );
+
         const IconChevronDown = ({ className }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
                 <polyline points="6 9 12 15 18 9" />
@@ -600,18 +608,28 @@
             );
         };
 
-        const SettingsModal = ({ isOpen, onClose, settings, onSaveSettings }) => {
+        const SettingsModal = ({ isOpen, onClose, onSave, settings, availableModels }) => {
             const [activeTab, setActiveTab] = useState("ai");
             const [tempSettings, setTempSettings] = useState(settings);
+            const [aiLogs, setAiLogs] = useState([]);
 
             useEffect(() => {
                 if (isOpen) setTempSettings(settings);
             }, [isOpen, settings]);
 
+            useEffect(() => {
+                if (isOpen && activeTab === "history") {
+                    fetch(`api/ai-usage.json?t=${Date.now()}`)
+                        .then(res => res.json())
+                        .then(data => setAiLogs(data))
+                        .catch(err => console.error("Failed to fetch AI logs:", err));
+                }
+            }, [isOpen, activeTab]);
+
             if (!isOpen) return null;
 
             const handleSave = () => {
-                onSaveSettings(tempSettings);
+                onSave(tempSettings);
                 onClose();
             };
 
@@ -641,12 +659,20 @@
                                 className={`flex-1 py-3 text-sm font-bold transition-colors ${activeTab === 'github' ? 'text-brand-orange border-b-2 border-brand-orange' : 'text-slate-400 hover:text-slate-600'}`}
                             >
                                 <div className="flex items-center justify-center gap-2">
-                                    <IconGithub className="w-4 h-4" /> GitHub設定
+                                    <IconGithub className="w-4 h-4" /> 接続設定
+                                </div>
+                            </button>
+                            <button
+                                onClick={() => setActiveTab("history")}
+                                className={`flex-1 py-3 text-sm font-bold transition-colors ${activeTab === 'history' ? 'text-brand-orange border-b-2 border-brand-orange' : 'text-slate-400 hover:text-slate-600'}`}
+                            >
+                                <div className="flex items-center justify-center gap-2">
+                                    <IconHistory className="w-4 h-4" /> AI履歴
                                 </div>
                             </button>
                         </div>
 
-                        <div className="p-6 space-y-4">
+                        <div className="p-6 space-y-4 max-h-[450px] overflow-y-auto custom-scrollbar">
                             {activeTab === "ai" ? (
                                 <div className="space-y-4 fade-in">
                                     <div className="flex items-center gap-2 mb-2 p-3 bg-slate-50 rounded-xl border border-slate-100">
@@ -682,7 +708,7 @@
                                         />
                                     </div>
                                 </div>
-                            ) : (
+                            ) : activeTab === "github" ? (
                                 <div className="space-y-4 fade-in">
                                     <div>
                                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 pl-1">アクセストークン (PAT)</label>
@@ -722,6 +748,37 @@
                                             レシピの保存にはGitHub Actionsの設定が必要です。PATとリポジトリ名を確認してください。
                                         </p>
                                     </div>
+                                </div>
+                            ) : (
+                                <div className="space-y-4 fade-in">
+                                    {aiLogs.length === 0 ? (
+                                        <div className="text-center py-10">
+                                            <IconHistory className="w-10 h-10 text-slate-200 mx-auto mb-2" />
+                                            <p className="text-sm text-slate-400">利用履歴はありません</p>
+                                        </div>
+                                    ) : (
+                                        aiLogs.map((log, idx) => (
+                                            <div key={idx} className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+                                                <div className="flex justify-between items-start">
+                                                    <div>
+                                                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">
+                                                            {new Date(log.timestamp).toLocaleString()}
+                                                        </span>
+                                                        <span className="text-xs font-bold text-brand-orange">{log.model}</span>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Usage</span>
+                                                        <span className="text-xs font-bold text-slate-700">{log.totalTokens} tokens</span>
+                                                    </div>
+                                                </div>
+                                                <div className="p-2 bg-white rounded border border-slate-100">
+                                                    <p className="text-[10px] font-medium text-slate-500 line-clamp-2">
+                                                        {log.prompt}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        ))
+                                    )}
                                 </div>
                             )}
                         </div>
