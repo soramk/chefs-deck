@@ -310,6 +310,22 @@
             </svg>
         );
 
+        const IconDownload = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+        );
+
+        const IconUpload = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" y1="3" x2="12" y2="15" />
+            </svg>
+        );
+
         const IconChevronDown = ({ className }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
                 <polyline points="6 9 12 15 18 9" />
@@ -1200,6 +1216,55 @@
                 showNotification("デッキへの登録を更新しました");
             };
 
+            const exportDeck = (deck) => {
+                const data = JSON.stringify({
+                    type: "chefs-deck-export",
+                    version: "1.0",
+                    deckName: deck.name,
+                    recipeIds: deck.recipeIds
+                }, null, 2);
+                const blob = new Blob([data], { type: "application/json" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `${deck.name}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showNotification(`デッキ「${deck.name}」をエクスポートしました`);
+            };
+
+            const importDeck = () => {
+                const input = document.createElement("input");
+                input.type = "file";
+                input.accept = ".json";
+                input.onchange = (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        try {
+                            const data = JSON.parse(event.target.result);
+                            if (data.type !== "chefs-deck-export") {
+                                throw new Error("無効なデッキファイルです");
+                            }
+                            const newDeck = {
+                                id: Date.now().toString(),
+                                name: `${data.deckName} (インポート)`,
+                                recipeIds: data.recipeIds
+                            };
+                            const newDecks = [...decks, newDeck];
+                            setDecks(newDecks);
+                            localStorage.setItem('chefs-deck-decks', JSON.stringify(newDecks));
+                            showNotification(`デッキ「${data.deckName}」をインポートしました`);
+                        } catch (err) {
+                            showNotification(`インポートに失敗しました: ${err.message}`);
+                        }
+                    };
+                    reader.readAsText(file);
+                };
+                input.click();
+            };
+
             const toggleFavorite = (id) => {
                 const savedFavorites = JSON.parse(localStorage.getItem('chefs-deck-favorites') || '[]');
                 const isNowFavorite = !savedFavorites.includes(id);
@@ -1622,8 +1687,16 @@
                                             </button>
                                         ))}
                                         <button
+                                            onClick={importDeck}
+                                            className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-400 border border-slate-200 hover:bg-slate-200 transition-all"
+                                            title="インポート"
+                                        >
+                                            <IconUpload className="w-4 h-4" />
+                                        </button>
+                                        <button
                                             onClick={() => setIsDeckCreatorOpen(true)}
                                             className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-400 border border-slate-200 hover:bg-slate-200 transition-all"
+                                            title="新規作成"
                                         >
                                             <IconPlus className="w-4 h-4" />
                                         </button>
@@ -1635,9 +1708,14 @@
                                     <div className="bg-white rounded-2xl p-6 border border-slate-200 sticky top-24">
                                         <div className="flex items-center justify-between mb-6">
                                             <h4 className="text-sm font-bold text-slate-400 uppercase tracking-widest">デッキ一覧</h4>
-                                            <button onClick={() => setIsDeckCreatorOpen(true)} className="text-brand-orange hover:text-brand-gold">
-                                                <IconPlus className="w-5 h-5" />
-                                            </button>
+                                            <div className="flex items-center gap-1">
+                                                <button onClick={importDeck} className="text-slate-400 hover:text-brand-orange" title="デッキをインポート">
+                                                    <IconUpload className="w-5 h-5" />
+                                                </button>
+                                                <button onClick={() => setIsDeckCreatorOpen(true)} className="text-brand-orange hover:text-brand-gold" title="新規デッキ作成">
+                                                    <IconPlus className="w-5 h-5" />
+                                                </button>
+                                            </div>
                                         </div>
                                         <nav className="space-y-2">
                                             <button
@@ -1655,14 +1733,24 @@
                                                         className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${selectedDeckId === deck.id ? 'bg-slate-800 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50'}`}
                                                     >
                                                         <IconBookmark className="w-5 h-5 opacity-70" />
-                                                        <span className="truncate">{deck.name}</span>
+                                                        <span className="truncate flex-1 text-left">{deck.name}</span>
                                                     </button>
-                                                    <button
-                                                        onClick={(e) => { e.stopPropagation(); deleteDeck(deck.id); }}
-                                                        className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-red-500 transition-all"
-                                                    >
-                                                        <IconTrash className="w-4 h-4" />
-                                                    </button>
+                                                    <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all bg-inherit pl-2">
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); exportDeck(deck); }}
+                                                            className="p-1 text-slate-400 hover:text-brand-orange transition-all"
+                                                            title="エクスポート"
+                                                        >
+                                                            <IconDownload className="w-4 h-4" />
+                                                        </button>
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); deleteDeck(deck.id); }}
+                                                            className="p-1 text-slate-400 hover:text-red-500 transition-all"
+                                                            title="削除"
+                                                        >
+                                                            <IconTrash className="w-4 h-4" />
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             ))}
                                         </nav>
