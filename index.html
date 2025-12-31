@@ -15,6 +15,22 @@
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            orange: '#F59E0B',
+                            red: '#991B1B',
+                            gold: '#D97706',
+                            dark: '#1E293B',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 
     <!-- Custom Styles -->
     <style>
@@ -77,6 +93,18 @@
 
         .border-brand-orange {
             border-color: var(--brand-orange);
+        }
+
+        .bg-brand-orange {
+            background-color: var(--brand-orange);
+        }
+
+        .bg-brand-red {
+            background-color: var(--brand-red);
+        }
+
+        .bg-brand-gold {
+            background-color: var(--brand-gold);
         }
     </style>
 </head>
@@ -626,6 +654,12 @@
                                                 placeholder="Repository name"
                                             />
                                         </div>
+                                    </div>
+                                    <div className="mt-4 p-3 bg-brand-orange/5 border border-brand-orange/20 rounded-xl">
+                                        <p className="text-[11px] font-bold text-brand-orange leading-relaxed">
+                                            <IconSettings className="w-3 h-3 inline-block mr-1 mb-0.5" />
+                                            レシピの保存にはGitHub Actionsの設定が必要です。PATとリポジトリ名を確認してください。
+                                        </p>
                                     </div>
                                 </div>
                             )}
@@ -1419,9 +1453,9 @@
                                 </aside>
 
                                 <div className="flex-1">
-                                    <div className="bg-gradient-to-br from-brand-orange to-brand-red rounded-2xl p-6 md:p-10 mb-10 shadow-lg text-white relative overflow-hidden">
+                                    <div className="bg-brand-gradient rounded-2xl p-6 md:p-10 mb-10 shadow-lg text-white relative overflow-hidden">
                                         <div className="absolute top-1/2 right-0 opacity-20 transform -translate-y-1/2 translate-x-10">
-                                            <img src="logo.png" alt="Hero Logo" className="w-80 h-auto" />
+                                            <img src="logo.png" alt="Hero Logo" className="w-48 h-auto" />
                                         </div>
 
                                         <div className="relative z-10 max-w-2xl">
@@ -1497,9 +1531,6 @@
                                                     )}
                                                 </div>
                                             </form>
-                                            <div className="text-xs mt-3 text-orange-200/50 space-y-1">
-                                                <p>※GitHub Actionsの設定が必要です。PATとリポジトリ名を確認してください。</p>
-                                            </div>
                                         </div>
                                     </div>
 
