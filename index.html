@@ -106,6 +106,15 @@
         .bg-brand-gold {
             background-color: var(--brand-gold);
         }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
     </style>
 </head>
 
@@ -600,6 +609,18 @@
                         <div className="p-6 space-y-4">
                             {activeTab === "ai" ? (
                                 <div className="space-y-4 fade-in">
+                                    <div className="flex items-center gap-2 mb-2 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                                        <input
+                                            type="checkbox"
+                                            id="useGemini"
+                                            checked={tempSettings.useGemini}
+                                            onChange={(e) => setTempSettings({ ...tempSettings, useGemini: e.target.checked })}
+                                            className="w-4 h-4 rounded border-slate-300 text-brand-orange focus:ring-brand-orange/30"
+                                        />
+                                        <label htmlFor="useGemini" className="text-sm font-bold text-slate-700 cursor-pointer">
+                                            Gemini APIを使用して解析
+                                        </label>
+                                    </div>
                                     <div>
                                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 pl-1">APIキー</label>
                                         <input
@@ -946,7 +967,6 @@
             const [deckFormData, setDeckFormData] = useState({ name: "", recipeIds: [] });
             const [isSidebarOpen, setIsSidebarOpen] = useState(true);
             const [importUrl, setImportUrl] = useState("");
-            const [useGemini, setUseGemini] = useState(false);
             const [isLoading, setIsLoading] = useState(false);
             const [notification, setNotification] = useState(null);
 
@@ -961,6 +981,7 @@
             // Settings State
             const [isSettingsOpen, setIsSettingsOpen] = useState(false);
             const [settings, setSettings] = useState({
+                useGemini: localStorage.getItem('USE_GEMINI') === 'true',
                 geminiApiKey: localStorage.getItem('GEMINI_API_KEY') || "",
                 selectedModel: localStorage.getItem('SELECTED_GEMINI_MODEL') || 'gemini-3-flash-preview',
                 githubToken: localStorage.getItem('GITHUB_TOKEN') || "",
@@ -1009,13 +1030,17 @@
 
             const handleUpdateSettings = (newSettings) => {
                 setSettings(newSettings);
+                localStorage.setItem('USE_GEMINI', newSettings.useGemini);
                 localStorage.setItem('GEMINI_API_KEY', newSettings.geminiApiKey);
                 localStorage.setItem('SELECTED_GEMINI_MODEL', newSettings.selectedModel);
                 localStorage.setItem('GITHUB_TOKEN', newSettings.githubToken);
                 localStorage.setItem('GITHUB_OWNER', newSettings.githubOwner);
                 localStorage.setItem('GITHUB_REPO', newSettings.githubRepo);
-                showNotification("設定を保存しました");
+
+                // 初回設定完了時などにモデル一覧を取得
                 if (newSettings.geminiApiKey) fetchModels(newSettings.geminiApiKey);
+
+                showNotification("設定を保存しました");
             };
 
             const toggleFavorite = (id) => {
@@ -1027,7 +1052,7 @@
                 dispatchWorkflow('save-recipe.yml', {
                     recipe_id: id.toString(),
                     recipe_json: JSON.stringify(target)
-                });
+                }, true); // silent sync
             };
 
             const filteredRecipes = useMemo(() => {
@@ -1112,11 +1137,13 @@
             }, []);
 
             // GitHub Actions ワークフローを実行
-            const dispatchWorkflow = async (workflowId, inputs) => {
+            const dispatchWorkflow = async (workflowId, inputs, silent = false) => {
                 const githubToken = settings.githubToken;
                 if (!githubToken) {
-                    showNotification("GitHub Tokenを設定してください");
-                    setIsSettingsOpen(true);
+                    if (!silent) {
+                        showNotification("GitHub Tokenを設定してください");
+                        setIsSettingsOpen(true);
+                    }
                     return false;
                 }
 
@@ -1124,8 +1151,10 @@
                 const repoName = settings.githubRepo;
 
                 if (!repoOwner || !repoName) {
-                    showNotification("リポジトリ情報を設定してください");
-                    setIsSettingsOpen(true);
+                    if (!silent) {
+                        showNotification("リポジトリ情報を設定してください");
+                        setIsSettingsOpen(true);
+                    }
                     return false;
                 }
 
@@ -1267,11 +1296,11 @@
                     }
 
                     // ワークフローを実行
-                    const success = await dispatchWorkflow(workflowId, {
+                    const success = await dispatchWorkflow('scrape-recipe.yml', {
                         url: importUrl,
-                        use_gemini: useGemini ? 'true' : 'false',
+                        use_gemini: settings.useGemini ? 'true' : 'false',
                         gemini_model: settings.selectedModel,
-                        gemini_api_key: useGemini ? settings.geminiApiKey : ""
+                        gemini_api_key: settings.useGemini ? settings.geminiApiKey : ""
                     });
 
                     if (success) {
@@ -1413,6 +1442,33 @@
 
                         {view === "list" ? (
                             <div className="flex flex-col lg:flex-row gap-8">
+                                {/* Mobile Deck Navigation */}
+                                <div className="lg:hidden -mx-4 px-4 mb-6 overflow-x-auto no-scrollbar">
+                                    <div className="flex gap-2 min-w-max pb-1">
+                                        <button
+                                            onClick={() => setSelectedDeckId(null)}
+                                            className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${!selectedDeckId ? 'bg-brand-orange text-white shadow-md' : 'bg-white text-slate-500 border border-slate-200'}`}
+                                        >
+                                            すべて
+                                        </button>
+                                        {decks.map(deck => (
+                                            <button
+                                                key={deck.id}
+                                                onClick={() => setSelectedDeckId(deck.id)}
+                                                className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${selectedDeckId === deck.id ? 'bg-slate-800 text-white shadow-md' : 'bg-white text-slate-500 border border-slate-200'}`}
+                                            >
+                                                {deck.name}
+                                            </button>
+                                        ))}
+                                        <button
+                                            onClick={() => setIsDeckCreatorOpen(true)}
+                                            className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-400 border border-slate-200 hover:bg-slate-200 transition-all"
+                                        >
+                                            <IconPlus className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                </div>
+
                                 {/* Sidebar */}
                                 <aside className={`${isSidebarOpen ? 'w-64' : 'w-0'} transition-all overflow-hidden hidden lg:block`}>
                                     <div className="bg-white rounded-2xl p-6 border border-slate-200 sticky top-24">
@@ -1485,50 +1541,6 @@
                                                     >
                                                         {isLoading ? <IconLoader className="w-5 h-5 animate-spin" /> : "カード化"}
                                                     </button>
-                                                </div>
-                                                <div className="flex items-center gap-4 text-white">
-                                                    <div className="flex items-center gap-2">
-                                                        <input
-                                                            type="checkbox"
-                                                            id="useGemini"
-                                                            checked={useGemini}
-                                                            onChange={(e) => setUseGemini(e.target.checked)}
-                                                            className="w-4 h-4 rounded border-white/30 bg-white/10 checked:bg-brand-orange focus:ring-2 focus:ring-brand-orange/30 overflow-hidden"
-                                                        />
-                                                        <label htmlFor="useGemini" className="text-sm cursor-pointer whitespace-nowrap">
-                                                            Gemini APIを使用
-                                                        </label>
-                                                    </div>
-
-                                                    {useGemini && (
-                                                        <div className="flex flex-col sm:flex-row gap-3 flex-1 fade-in">
-                                                            <div className="flex-1 relative">
-                                                                <input
-                                                                    type="password"
-                                                                    placeholder="Gemini API Key..."
-                                                                    className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-1.5 text-xs text-white placeholder-white/50 focus:bg-white/20 outline-none transition-all"
-                                                                    value={settings.geminiApiKey}
-                                                                    onChange={(e) => {
-                                                                        const newSettings = { ...settings, geminiApiKey: e.target.value };
-                                                                        handleUpdateSettings(newSettings);
-                                                                    }}
-                                                                />
-                                                            </div>
-                                                            <div className="relative">
-                                                                <select
-                                                                    className="bg-white/10 border border-white/20 rounded-lg px-3 py-1.5 text-xs text-white focus:bg-white/20 outline-none transition-all cursor-pointer appearance-none pr-8"
-                                                                    value={settings.selectedModel}
-                                                                    onChange={(e) => {
-                                                                        const newSettings = { ...settings, selectedModel: e.target.value };
-                                                                        handleUpdateSettings(newSettings);
-                                                                    }}
-                                                                >
-                                                                    {availableModels.map(m => <option key={m} value={m} className="text-slate-800">{m}</option>)}
-                                                                </select>
-                                                                <IconChevronDown className="w-3 h-3 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none opacity-50" />
-                                                            </div>
-                                                        </div>
-                                                    )}
                                                 </div>
                                             </form>
                                         </div>
