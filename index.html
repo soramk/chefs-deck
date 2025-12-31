@@ -343,6 +343,24 @@
             </svg>
         );
 
+        const IconFileText = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+                <line x1="10" y1="9" x2="8" y2="9" />
+            </svg>
+        );
+
+        const IconMoreVertical = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <circle cx="12" cy="12" r="1" />
+                <circle cx="12" cy="5" r="1" />
+                <circle cx="12" cy="19" r="1" />
+            </svg>
+        );
+
 
 
         // --- Helper: Data Migration ---
@@ -369,216 +387,251 @@
 
         // --- Components ---
 
-        const RecipeCard = ({ recipe, onDelete, onEdit, onToggleFavorite, decks, onUpdateDecks }) => {
-            const [isExpanded, setIsExpanded] = useState(false);
-            const [scaleFactor, setScaleFactor] = useState(1);
+        const RecipeCard = ({ recipe, onDelete, onEdit, onToggleFavorite, onViewDetails }) => {
+            return (
+                <div
+                    className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden card-hover transition-all duration-300 fade-in flex flex-col relative h-fit cursor-pointer group/card"
+                    onClick={() => onViewDetails(recipe)}
+                >
+                    <div className="h-1.5 w-full bg-brand-gradient"></div>
 
-            // 入力用の一時的な状態（空入力を許可するため文字列で管理）
-            const [servingInput, setServingInput] = useState((recipe.baseServings || 2).toString());
+                    <div className="p-5 flex flex-col">
+                        <div className="flex justify-between items-start mb-2 text-slate-800 group-hover/card:text-brand-orange">
+                            <h3 className="text-lg font-bold line-clamp-2 font-brand transition-colors">
+                                {recipe.title}
+                            </h3>
+                            <button
+                                onClick={(e) => { e.stopPropagation(); onToggleFavorite(recipe.id); }}
+                                className={`p-1 transition-colors ${recipe.isFavorite ? 'text-brand-red' : 'text-slate-300 hover:text-brand-red'}`}
+                            >
+                                <IconHeart className="w-5 h-5 transition-transform group-hover:scale-110" fill={recipe.isFavorite ? "currentColor" : "none"} />
+                            </button>
+                        </div>
+
+                        {recipe.tags && recipe.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mb-3">
+                                {recipe.tags.slice(0, 3).map((tag, idx) => (
+                                    <span key={idx} className="px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded text-[9px] font-bold uppercase tracking-wider">
+                                        {tag}
+                                    </span>
+                                ))}
+                                {recipe.tags.length > 3 && (
+                                    <span className="px-1.5 py-0.5 bg-slate-50 text-slate-400 rounded text-[9px] font-bold">
+                                        +{recipe.tags.length - 3}
+                                    </span>
+                                )}
+                            </div>
+                        )}
+
+                        <div className="flex items-center gap-2 text-sm text-slate-500 mt-2">
+                            <span className="bg-slate-50 border border-slate-100 px-2 py-0.5 rounded-md text-[10px] font-bold flex items-center gap-1 opacity-70">
+                                <IconUsers className="w-3 h-3" /> {recipe.baseServings}人分
+                            </span>
+                            <span className="bg-slate-50 border border-slate-100 px-2 py-0.5 rounded-md text-[10px] font-bold opacity-70">
+                                {recipe.ingredients?.length || 0} 材料
+                            </span>
+                        </div>
+
+                        <div className="mt-4 pt-4 flex items-center justify-between border-t border-slate-50 opacity-0 group-hover/card:opacity-100 transition-opacity">
+                            <div className="flex gap-1">
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); onEdit(recipe); }}
+                                    className="p-1.5 text-slate-400 hover:text-brand-orange hover:bg-brand-orange/5 rounded-lg transition-colors"
+                                    title="編集"
+                                >
+                                    <IconEdit className="w-4 h-4" />
+                                </button>
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); onDelete(recipe.id); }}
+                                    className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                    title="削除"
+                                >
+                                    <IconTrash className="w-4 h-4" />
+                                </button>
+                            </div>
+                            <span className="text-[10px] font-bold text-brand-orange flex items-center gap-1">
+                                詳細を見る <IconChevronDown className="w-3 h-3 -rotate-90" />
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const RecipeDetailModal = ({ recipe, isOpen, onClose, decks, onUpdateDecks, onEdit, onDelete, onToggleFavorite }) => {
+            const [scaleFactor, setScaleFactor] = useState(1);
+            const [servingInput, setServingInput] = useState("");
             const [editingIngredient, setEditingIngredient] = useState({ index: -1, value: "" });
 
-            // 外部からscaleFactorやrecipeが変わった時に表示入力を同期
             useEffect(() => {
-                const currentServings = Math.round((recipe.baseServings || 2) * scaleFactor * 10) / 10;
-                setServingInput(currentServings.toString());
-            }, [scaleFactor, recipe.baseServings]);
+                if (recipe) {
+                    const currentServings = Math.round((recipe.baseServings || 2) * scaleFactor * 10) / 10;
+                    setServingInput(currentServings.toString());
+                }
+            }, [scaleFactor, recipe]);
 
-            // Apply global scale if provided
+            // Apply global scale
             useEffect(() => {
                 if (window.appGlobalScale !== undefined && window.appSelectedDeckId !== null) {
                     setScaleFactor(window.appGlobalScale);
                 }
-            }, [window.appGlobalScale, window.appSelectedDeckId]);
+            }, []);
+
+            if (!isOpen || !recipe) return null;
 
             const handleServingChange = (e) => {
                 const valStr = e.target.value;
-                setServingInput(valStr); // 文字列としてそのままセット（空文字も許可）
-
+                setServingInput(valStr);
                 const val = parseFloat(valStr);
                 if (!isNaN(val) && val > 0) {
-                    const base = recipe.baseServings || 2;
-                    setScaleFactor(val / base);
+                    setScaleFactor(val / (recipe.baseServings || 2));
                 }
             };
 
             const handleIngredientAmountChange = (index, baseAmount, newValStr) => {
                 setEditingIngredient({ index, value: newValStr });
-
                 const val = parseFloat(newValStr);
                 if (baseAmount && !isNaN(val) && val > 0) {
                     setScaleFactor(val / baseAmount);
                 }
             };
 
-            const toggleExpand = () => setIsExpanded(!isExpanded);
-
             return (
-                <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden card-hover transition-all duration-300 fade-in flex flex-col relative h-fit">
-                    <div className="h-1.5 w-full bg-brand-gradient"></div>
-
-                    <div className="p-5 flex flex-col">
-                        <div className="flex justify-between items-start mb-2">
-                            <h3 className="text-xl font-bold text-slate-800 line-clamp-2 font-brand cursor-pointer hover:text-brand-orange transition-colors" onClick={toggleExpand}>
-                                {recipe.title}
-                            </h3>
-                            <div className="flex gap-1">
-                                <button
-                                    onClick={(e) => { e.stopPropagation(); onToggleFavorite(recipe.id); }}
-                                    className={`p-1 transition-colors ${recipe.isFavorite ? 'text-brand-red' : 'text-slate-300 hover:text-brand-red'}`}
-                                >
-                                    <IconHeart className="w-5 h-5" fill={recipe.isFavorite ? "currentColor" : "none"} />
-                                </button>
-                                <button onClick={toggleExpand} className="text-slate-500 hover:text-brand-orange p-1">
-                                    {isExpanded ? <IconChevronUp className="w-5 h-5" /> : <IconChevronDown className="w-5 h-5" />}
-                                </button>
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm fade-in">
+                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in duration-200">
+                        <div className="bg-brand-gradient p-6 text-white shrink-0">
+                            <div className="flex justify-between items-start gap-4">
+                                <div className="flex-1">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        {recipe.tags?.map((tag, idx) => (
+                                            <span key={idx} className="bg-white/20 text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">
+                                                {tag}
+                                            </span>
+                                        ))}
+                                    </div>
+                                    <h2 className="text-2xl font-bold font-brand leading-tight">{recipe.title}</h2>
+                                </div>
+                                <div className="flex gap-2 shrink-0">
+                                    <button
+                                        onClick={() => onToggleFavorite(recipe.id)}
+                                        className={`p-2 rounded-xl transition-colors ${recipe.isFavorite ? 'bg-white text-brand-red shadow-lg' : 'bg-white/10 text-white hover:bg-white/20'}`}
+                                    >
+                                        <IconHeart className="w-6 h-6" fill={recipe.isFavorite ? "currentColor" : "none"} />
+                                    </button>
+                                    <button onClick={onClose} className="p-2 bg-white/10 text-white hover:bg-white/20 rounded-xl transition-colors">
+                                        <IconX className="w-6 h-6" />
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
-                        {recipe.tags && recipe.tags.length > 0 && (
-                            <div className="flex flex-wrap gap-1 mb-3">
-                                {recipe.tags.map((tag, idx) => (
-                                    <span key={idx} className="px-2 py-0.5 bg-slate-100 text-slate-500 rounded text-[10px] font-bold uppercase tracking-wider">
-                                        {tag}
-                                    </span>
-                                ))}
-                            </div>
-                        )}
-
-                        {!isExpanded ? (
-                            <div className="flex items-center gap-2 text-sm text-slate-500 mb-4">
-                                <span className="bg-slate-100 border border-slate-200 px-2 py-1 rounded text-xs font-medium flex items-center gap-1">
-                                    <IconUsers className="w-3 h-3" /> {recipe.baseServings}人分
-                                </span>
-                                <span className="bg-slate-100 border border-slate-200 px-2 py-1 rounded text-xs font-medium">
-                                    {recipe.ingredients.length} 材料
-                                </span>
-                            </div>
-                        ) : (
-                            <div className="mb-4 fade-in">
-                                <div className="bg-brand-orange/5 rounded-lg p-3 mb-4 border border-brand-orange/10">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <label className="text-xs font-bold text-brand-orange uppercase tracking-wide flex items-center gap-1">
-                                            <IconCalculator className="w-3 h-3" /> スマートスケーリング
-                                        </label>
-                                        <button
-                                            onClick={() => setScaleFactor(1)}
-                                            className="text-[10px] bg-white border border-brand-orange/20 text-brand-orange px-2 py-0.5 rounded hover:bg-brand-orange/5 transition-colors"
-                                        >
-                                            リセット
-                                        </button>
+                        <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8 custom-scrollbar">
+                            <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+                                <div className="md:col-span-5 space-y-6">
+                                    <div className="bg-brand-orange/5 rounded-2xl p-4 border border-brand-orange/10">
+                                        <label className="text-[10px] font-black text-brand-orange uppercase tracking-[0.2em] block mb-3 text-center">人数調整・自動スケーリング</label>
+                                        <div className="relative">
+                                            <input
+                                                type="number"
+                                                value={servingInput}
+                                                onChange={handleServingChange}
+                                                step="0.5" min="0"
+                                                className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-brand-orange/20 text-brand-orange font-black text-2xl focus:ring-4 focus:ring-brand-orange/10 outline-none text-center shadow-inner"
+                                            />
+                                            <IconUsers className="w-6 h-6 text-brand-orange/30 absolute left-4 top-1/2 -translate-y-1/2" />
+                                            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-brand-orange/40 font-bold text-sm">人分</div>
+                                        </div>
+                                        <p className="text-[10px] text-brand-orange/60 mt-3 text-center leading-relaxed font-bold">
+                                            数値を変更すると、全材料が<br />自動的にリサイズされます
+                                        </p>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <div className="flex-1">
-                                            <div className="relative">
-                                                <input
-                                                    type="number"
-                                                    value={servingInput}
-                                                    onChange={handleServingChange}
-                                                    step="0.5"
-                                                    min="0"
-                                                    className="w-full pl-8 pr-2 py-1.5 rounded bg-white border border-brand-orange/20 text-brand-orange font-bold focus:ring-2 focus:ring-brand-orange/20 outline-none text-center"
-                                                />
-                                                <IconUsers className="w-4 h-4 text-brand-orange/40 absolute left-2 top-1/2 -translate-y-1/2" />
+
+                                    {decks && decks.length > 0 && (
+                                        <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-3">所属デッキ</label>
+                                            <div className="flex flex-wrap gap-2">
+                                                {decks.map(deck => {
+                                                    const isInDeck = deck.recipeIds.includes(recipe.id);
+                                                    return (
+                                                        <button
+                                                            key={deck.id}
+                                                            onClick={() => {
+                                                                const currentIds = decks.filter(d => d.recipeIds.includes(recipe.id)).map(d => d.id);
+                                                                const nextIds = isInDeck ? currentIds.filter(id => id !== deck.id) : [...currentIds, deck.id];
+                                                                onUpdateDecks(recipe.id, nextIds);
+                                                            }}
+                                                            className={`px-3 py-2 rounded-xl text-[11px] font-bold transition-all border ${isInDeck ? 'bg-slate-800 text-white border-slate-800' : 'bg-white text-slate-400 border-slate-200'}`}
+                                                        >
+                                                            {deck.name}
+                                                        </button>
+                                                    );
+                                                })}
                                             </div>
-                                            <div className="text-[10px] text-center text-brand-orange/60 mt-1 font-bold">人分を作る</div>
+                                        </div>
+                                    )}
+
+                                    <div className="flex flex-col gap-2">
+                                        <a
+                                            href={recipe.url} target="_blank" rel="noopener noreferrer"
+                                            className="flex items-center justify-center gap-2 w-full py-3 bg-slate-100 text-slate-600 rounded-xl text-sm font-bold hover:bg-slate-200 transition-colors"
+                                        >
+                                            <IconExternalLink className="w-4 h-4" /> 取得元ページを開く
+                                        </a>
+                                        <div className="flex gap-2">
+                                            <button onClick={() => { onClose(); onEdit(recipe); }} className="flex-1 py-3 bg-white border border-slate-200 text-slate-600 rounded-xl text-sm font-bold hover:bg-slate-50 transition-colors flex items-center justify-center gap-2">
+                                                <IconEdit className="w-4 h-4" /> 編集
+                                            </button>
+                                            <button onClick={() => { if (confirm("削除しますか？")) { onClose(); onDelete(recipe.id); } }} className="flex-1 py-3 bg-white border border-red-100 text-red-500 rounded-xl text-sm font-bold hover:bg-red-50 transition-colors flex items-center justify-center gap-2">
+                                                <IconTrash className="w-4 h-4" /> 破棄
+                                            </button>
                                         </div>
                                     </div>
-                                    <p className="text-[10px] text-brand-orange/40 mt-2 text-center leading-tight">
-                                        下の材料の数値を変更しても<br />全体が自動計算されます
-                                    </p>
                                 </div>
 
-                                {decks && decks.length > 0 && (
-                                    <div className="mb-6 p-3 bg-slate-50 rounded-xl border border-slate-100">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">
-                                            登録中のデッキ
-                                        </label>
-                                        <div className="flex flex-wrap gap-2">
-                                            {decks.map(deck => {
-                                                const isInDeck = deck.recipeIds.includes(recipe.id);
+                                <div className="md:col-span-7 space-y-8">
+                                    <div>
+                                        <h4 className="text-xs font-black text-slate-800 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                                            <span className="w-1.5 h-4 bg-brand-orange rounded-full"></span> 材料
+                                        </h4>
+                                        <div className="space-y-px rounded-2xl overflow-hidden border border-slate-100 bg-slate-50 shadow-sm">
+                                            {recipe.ingredients?.map((ing, idx) => {
+                                                const isNumber = ing.amount && !isNaN(parseFloat(ing.amount));
+                                                const calculatedAmount = isNumber ? Math.round(parseFloat(ing.amount) * scaleFactor * 100) / 100 : ing.amount;
                                                 return (
-                                                    <button
-                                                        key={deck.id}
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            const currentIds = decks.filter(d => d.recipeIds.includes(recipe.id)).map(d => d.id);
-                                                            const nextIds = isInDeck
-                                                                ? currentIds.filter(id => id !== deck.id)
-                                                                : [...currentIds, deck.id];
-                                                            onUpdateDecks(recipe.id, nextIds);
-                                                        }}
-                                                        className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1.5 border ${isInDeck ? 'bg-slate-800 text-white border-slate-800 shadow-sm' : 'bg-white text-slate-400 border-slate-200 hover:border-brand-orange hover:text-brand-orange'}`}
-                                                    >
-                                                        <IconBookmark className="w-3 h-3" />
-                                                        {deck.name}
-                                                    </button>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-                                )}
-
-                                <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-                                    <div className="space-y-1">
-                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-widest block mb-1 px-1">
-                                            材料
-                                        </label>
-                                        {recipe.ingredients.map((ing, idx) => {
-                                            const isNumber = ing.amount && !isNaN(parseFloat(ing.amount));
-                                            const calculatedAmount = isNumber
-                                                ? Math.round(parseFloat(ing.amount) * scaleFactor * 100) / 100
-                                                : ing.amount;
-
-                                            // Gram Conversion Logic
-                                            let gramValue = null;
-                                            if (isNumber && UNIT_CONVERSIONS[ing.name]) {
-                                                const conversion = UNIT_CONVERSIONS[ing.name];
-                                                if (ing.unit === "大さじ") gramValue = calculatedAmount * conversion.tbsp;
-                                                else if (ing.unit === "小さじ") gramValue = calculatedAmount * conversion.tsp;
-                                                else if (ing.unit === "カップ") gramValue = calculatedAmount * conversion.cup;
-                                            }
-
-                                            return (
-                                                <div key={idx} className="flex items-center justify-between text-sm py-1 border-b border-slate-50 last:border-0 hover:bg-slate-50 rounded px-1 transition-colors group/row">
-                                                    <span className="text-slate-700 font-medium truncate flex-1">{ing.name}</span>
-                                                    <div className="flex items-center gap-1">
-                                                        {isNumber ? (
-                                                            <div className="flex flex-col items-end">
+                                                    <div key={idx} className="flex items-center justify-between text-sm py-3 px-5 bg-white hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-0 group">
+                                                        <span className="text-slate-700 font-bold">{ing.name}</span>
+                                                        <div className="flex items-center gap-2">
+                                                            {isNumber ? (
                                                                 <input
                                                                     type="number"
                                                                     value={editingIngredient.index === idx ? editingIngredient.value : calculatedAmount}
                                                                     onChange={(e) => handleIngredientAmountChange(idx, ing.amount, e.target.value)}
                                                                     onBlur={() => setEditingIngredient({ index: -1, value: "" })}
-                                                                    className="w-16 text-right font-bold text-slate-800 bg-transparent border-b border-transparent hover:border-slate-300 focus:border-brand-orange focus:bg-white outline-none transition-all py-0.5 px-1 rounded text-sm"
+                                                                    className="w-20 text-right font-black text-brand-orange bg-transparent border-b-2 border-transparent hover:border-brand-orange/20 focus:border-brand-orange focus:bg-brand-orange/5 outline-none transition-all py-1 px-1 rounded-lg"
                                                                 />
-                                                                {gramValue && (
-                                                                    <span className="text-[10px] text-slate-400 font-bold">({Math.round(gramValue)}g)</span>
-                                                                )}
-                                                            </div>
-                                                        ) : (
-                                                            <span className="text-slate-500 text-xs">{ing.amount}</span>
-                                                        )}
-                                                        <span className="text-slate-500 text-xs w-10 text-left whitespace-nowrap overflow-hidden">{ing.unit}</span>
+                                                            ) : (
+                                                                <span className="text-slate-500 font-bold">{ing.amount}</span>
+                                                            )}
+                                                            <span className="text-slate-400 font-bold text-xs w-12">{ing.unit}</span>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            );
-                                        })}
+                                                );
+                                            })}
+                                        </div>
                                     </div>
 
                                     {recipe.steps && recipe.steps.length > 0 && (
-                                        <div className="mt-4 pt-4 border-t border-slate-100">
-                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-widest block mb-2 px-1">
-                                                料理手順
-                                            </label>
-                                            <div className="space-y-3">
+                                        <div>
+                                            <h4 className="text-xs font-black text-slate-800 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                                                <span className="w-1.5 h-4 bg-brand-orange rounded-full"></span> 料理手順
+                                            </h4>
+                                            <div className="space-y-4">
                                                 {recipe.steps.map((step, idx) => (
-                                                    <div key={idx} className="flex gap-3 items-start group">
-                                                        <span className="flex-shrink-0 w-5 h-5 rounded-full bg-slate-100 text-slate-500 text-[10px] font-bold flex items-center justify-center border border-slate-200">
+                                                    <div key={idx} className="flex gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100 group hover:border-brand-orange/20 transition-all">
+                                                        <span className="shrink-0 w-8 h-8 rounded-xl bg-white text-brand-orange text-sm font-black flex items-center justify-center border border-slate-200 shadow-sm">
                                                             {idx + 1}
                                                         </span>
-                                                        <p className="text-sm text-slate-600 leading-relaxed pt-0.5">
-                                                            {step}
-                                                        </p>
+                                                        <p className="text-sm text-slate-600 leading-relaxed pt-1 font-medium">{step}</p>
                                                     </div>
                                                 ))}
                                             </div>
@@ -586,42 +639,12 @@
                                     )}
 
                                     {recipe.notes && (
-                                        <div className="mt-4 pt-4 border-t border-slate-100">
-                                            <label className="text-[10px] font-bold text-brand-orange uppercase tracking-widest block mb-1 px-1">
-                                                メモ・備考
-                                            </label>
-                                            <p className="text-xs text-slate-500 italic bg-brand-orange/5 p-3 rounded-lg border border-brand-orange/10">
-                                                {recipe.notes}
-                                            </p>
+                                        <div className="p-5 bg-brand-gold/5 rounded-2xl border border-brand-gold/10">
+                                            <h4 className="text-[10px] font-black text-brand-gold uppercase tracking-[0.2em] mb-2">メモ</h4>
+                                            <p className="text-sm text-slate-500 italic leading-relaxed">{recipe.notes}</p>
                                         </div>
                                     )}
                                 </div>
-                            </div>
-                        )}
-
-                        <div className="mt-auto pt-4 flex items-center justify-between border-t border-slate-100">
-                            <a
-                                href={recipe.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-slate-400 hover:text-brand-orange transition-colors flex items-center gap-1 text-xs"
-                                title="元のサイトを開く"
-                            >
-                                <IconExternalLink className="w-4 h-4" /> 取得元ページ
-                            </a>
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={() => onEdit(recipe)}
-                                    className="p-2 text-slate-500 hover:text-brand-orange hover:bg-brand-orange/5 rounded-full transition-colors"
-                                >
-                                    <IconEdit className="w-5 h-5" />
-                                </button>
-                                <button
-                                    onClick={() => onDelete(recipe.id)}
-                                    className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
-                                >
-                                    <IconTrash className="w-5 h-5" />
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -1115,6 +1138,74 @@
             );
         };
 
+        const ExportModal = ({ isOpen, onClose, decks, onExportDeck, onExportAll }) => {
+            if (!isOpen) return null;
+
+            return (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm fade-in">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in duration-200">
+                        <div className="bg-brand-gradient p-6 text-white flex justify-between items-center">
+                            <h2 className="text-xl font-bold font-brand flex items-center gap-2">
+                                <IconDownload className="w-6 h-6" /> エクスポート
+                            </h2>
+                            <button onClick={onClose} className="hover:bg-white/20 p-1 rounded-full transition-colors">
+                                <IconX className="w-6 h-6" />
+                            </button>
+                        </div>
+
+                        <div className="p-6">
+                            <button
+                                onClick={() => { onExportAll(); onClose(); }}
+                                className="w-full p-4 bg-slate-800 text-white rounded-2xl flex items-center justify-between group hover:bg-slate-700 transition-all shadow-md mb-6"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
+                                        <IconLayers className="w-6 h-6" />
+                                    </div>
+                                    <div className="text-left">
+                                        <div className="font-bold text-sm">全データバックアップ</div>
+                                        <div className="text-[10px] text-white/60 uppercase tracking-widest font-black">Full Backup</div>
+                                    </div>
+                                </div>
+                                <IconDownload className="w-5 h-5 opacity-40 group-hover:opacity-100 transition-all" />
+                            </button>
+
+                            <div className="relative mb-4">
+                                <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-slate-100"></span></div>
+                                <div className="relative flex justify-center text-[10px] font-black"><span className="bg-white px-3 text-slate-300 uppercase tracking-[0.3em]">OR SPECIFIC DECK</span></div>
+                            </div>
+
+                            <div className="space-y-2 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
+                                {decks.length === 0 ? (
+                                    <p className="text-xs text-slate-400 text-center py-4 italic">作成済みのデッキはありません</p>
+                                ) : (
+                                    decks.map(deck => (
+                                        <button
+                                            key={deck.id}
+                                            onClick={() => { onExportDeck(deck); onClose(); }}
+                                            className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between group hover:border-brand-orange hover:bg-brand-orange/5 transition-all"
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <IconBookmark className="w-4 h-4 text-slate-400 group-hover:text-brand-orange" />
+                                                <span className="text-sm font-bold text-slate-600 group-hover:text-slate-800">{deck.name}</span>
+                                            </div>
+                                            <IconDownload className="w-4 h-4 text-slate-200 group-hover:text-brand-orange" />
+                                        </button>
+                                    ))
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="p-4 bg-slate-50 border-t border-slate-100 flex justify-center">
+                            <button onClick={onClose} className="px-6 py-2 text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors">
+                                キャンセル
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
         // --- Main Application ---
 
         const App = () => {
@@ -1125,6 +1216,8 @@
             });
             const [selectedDeckId, setSelectedDeckId] = useState(null);
             const [globalScale, setGlobalScale] = useState(1);
+            const [selectedRecipeDetail, setSelectedRecipeDetail] = useState(null);
+            const [isExportModalOpen, setIsExportModalOpen] = useState(false);
             const [view, setView] = useState("list");
             const [editingRecipe, setEditingRecipe] = useState(null);
             const [isDeckCreatorOpen, setIsDeckCreatorOpen] = useState(false);
@@ -1243,6 +1336,25 @@
                 showNotification(`デッキ「${deck.name}」をエクスポートしました`);
             };
 
+            const exportAll = () => {
+                const favorites = JSON.parse(localStorage.getItem('chefs-deck-favorites') || '[]');
+                const data = JSON.stringify({
+                    type: "chefs-deck-backup",
+                    version: "1.0",
+                    decks: decks,
+                    favorites: favorites,
+                    exportedAt: new Date().toISOString()
+                }, null, 2);
+                const blob = new Blob([data], { type: "application/json" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `chefs-deck-backup-${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showNotification("全データのバックアップをエクスポートしました");
+            };
+
             const importDeck = () => {
                 const input = document.createElement("input");
                 input.type = "file";
@@ -1254,18 +1366,26 @@
                     reader.onload = (event) => {
                         try {
                             const data = JSON.parse(event.target.result);
-                            if (data.type !== "chefs-deck-export") {
-                                throw new Error("無効なデッキファイルです");
+                            if (data.type === "chefs-deck-export") {
+                                const newDeck = {
+                                    id: Date.now().toString(),
+                                    name: `${data.deckName} (インポート)`,
+                                    recipeIds: data.recipeIds
+                                };
+                                const newDecks = [...decks, newDeck];
+                                setDecks(newDecks);
+                                localStorage.setItem('chefs-deck-decks', JSON.stringify(newDecks));
+                                showNotification(`デッキ「${data.deckName}」をインポートしました`);
+                            } else if (data.type === "chefs-deck-backup") {
+                                if (confirm("バックアップから復元しますか？既存のデッキとお気に入りが上書きされる可能性があります。")) {
+                                    setDecks(data.decks);
+                                    localStorage.setItem('chefs-deck-decks', JSON.stringify(data.decks));
+                                    localStorage.setItem('chefs-deck-favorites', JSON.stringify(data.favorites));
+                                    showNotification("全データをバックアップから復元しました");
+                                }
+                            } else {
+                                throw new Error("無効なファイル形式です");
                             }
-                            const newDeck = {
-                                id: Date.now().toString(),
-                                name: `${data.deckName} (インポート)`,
-                                recipeIds: data.recipeIds
-                            };
-                            const newDecks = [...decks, newDeck];
-                            setDecks(newDecks);
-                            localStorage.setItem('chefs-deck-decks', JSON.stringify(newDecks));
-                            showNotification(`デッキ「${data.deckName}」をインポートしました`);
                         } catch (err) {
                             showNotification(`インポートに失敗しました: ${err.message}`);
                         }
@@ -1273,6 +1393,16 @@
                     reader.readAsText(file);
                 };
                 input.click();
+            };
+
+            const handleDeleteDeck = (id, name) => {
+                if (confirm(`デッキ「${name}」を削除してもよろしいですか？`)) {
+                    const nextDecks = decks.filter(d => d.id !== id);
+                    setDecks(nextDecks);
+                    localStorage.setItem('chefs-deck-decks', JSON.stringify(nextDecks));
+                    if (selectedDeckId === id) setSelectedDeckId(null);
+                    showNotification(`デッキ「${name}」を削除しました`);
+                }
             };
 
             const toggleFavorite = (id) => {
@@ -1650,6 +1780,13 @@
                                     </button>
                                 )}
                                 <button
+                                    onClick={() => setIsExportModalOpen(true)}
+                                    className="bg-slate-100 text-slate-600 p-2.5 rounded-xl hover:bg-slate-200 transition-all hover:scale-110"
+                                    title="Export Data"
+                                >
+                                    <IconDownload className="w-5 h-5" />
+                                </button>
+                                <button
                                     onClick={() => setIsSettingsOpen(true)}
                                     className="bg-slate-100 text-slate-600 p-2.5 rounded-xl hover:bg-slate-200 transition-all hover:rotate-45"
                                     title="Settings"
@@ -1659,6 +1796,25 @@
                             </div>
                         </div>
                     </header>
+
+                    <RecipeDetailModal
+                        isOpen={!!selectedRecipeDetail}
+                        recipe={selectedRecipeDetail}
+                        onClose={() => setSelectedRecipeDetail(null)}
+                        decks={decks}
+                        onUpdateDecks={handleUpdateRecipeDecks}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                        onToggleFavorite={toggleFavorite}
+                    />
+
+                    <ExportModal
+                        isOpen={isExportModalOpen}
+                        onClose={() => setIsExportModalOpen(false)}
+                        decks={decks}
+                        onExportDeck={exportDeck}
+                        onExportAll={exportAll}
+                    />
 
                     <SettingsModal
                         isOpen={isSettingsOpen}
@@ -1688,13 +1844,20 @@
                                             すべて
                                         </button>
                                         {decks.map(deck => (
-                                            <button
-                                                key={deck.id}
-                                                onClick={() => setSelectedDeckId(deck.id)}
-                                                className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${selectedDeckId === deck.id ? 'bg-slate-800 text-white shadow-md' : 'bg-white text-slate-500 border border-slate-200'}`}
-                                            >
-                                                {deck.name}
-                                            </button>
+                                            <div key={deck.id} className="relative group/nav shrink-0">
+                                                <button
+                                                    onClick={() => setSelectedDeckId(deck.id)}
+                                                    className={`px-4 py-2 rounded-full text-xs font-bold transition-all pr-8 ${selectedDeckId === deck.id ? 'bg-slate-800 text-white shadow-md' : 'bg-white text-slate-500 border border-slate-200'}`}
+                                                >
+                                                    {deck.name}
+                                                </button>
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); handleDeleteDeck(deck.id, deck.name); }}
+                                                    className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-300 hover:text-red-500 transition-colors p-0.5"
+                                                >
+                                                    <IconX className="w-3.5 h-3.5" />
+                                                </button>
+                                            </div>
                                         ))}
                                         <button
                                             onClick={importDeck}
@@ -1747,14 +1910,14 @@
                                                     </button>
                                                     <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all bg-inherit pl-2">
                                                         <button
-                                                            onClick={(e) => { e.stopPropagation(); exportDeck(deck); }}
+                                                            onClick={(e) => { e.stopPropagation(); setIsExportModalOpen(true); }}
                                                             className="p-1 text-slate-400 hover:text-brand-orange transition-all"
                                                             title="エクスポート"
                                                         >
                                                             <IconDownload className="w-4 h-4" />
                                                         </button>
                                                         <button
-                                                            onClick={(e) => { e.stopPropagation(); deleteDeck(deck.id); }}
+                                                            onClick={(e) => { e.stopPropagation(); handleDeleteDeck(deck.id, deck.name); }}
                                                             className="p-1 text-slate-400 hover:text-red-500 transition-all"
                                                             title="削除"
                                                         >
@@ -1903,8 +2066,7 @@
                                                         onDelete={handleDelete}
                                                         onEdit={handleEdit}
                                                         onToggleFavorite={toggleFavorite}
-                                                        decks={decks}
-                                                        onUpdateDecks={handleUpdateRecipeDecks}
+                                                        onViewDetails={setSelectedRecipeDetail}
                                                     />
                                                 ))
                                             )}

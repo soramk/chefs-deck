@@ -31,10 +31,11 @@ jobs:
                   mkdir -p data
                   echo '${{ github.event.inputs.recipe_json }}' > data/recipe-${{ github.event.inputs.recipe_id }}.json
 
-            - name: Generate recipes.json
+            - name: Generate recipes.json and AI usage logs
               run: |
                   npm install
                   node api/recipes.json.js
+                  node api/ai-usage.json.js
 
             - name: Commit and push changes
               run: |
