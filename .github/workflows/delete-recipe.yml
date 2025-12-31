@@ -1,0 +1,48 @@
+name: Delete Recipe
+
+on:
+    workflow_dispatch:
+        inputs:
+            recipe_id:
+                description: "Recipe ID to delete"
+                required: true
+
+jobs:
+    delete:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20"
+
+            - name: Move to old folder
+              run: |
+                  mkdir -p data/old
+                  # 拡張子まで一致するファイルを探す (recipe-[id].json)
+                  FILE="data/recipe-${{ github.event.inputs.recipe_id }}.json"
+                  if [ -f "$FILE" ]; then
+                    mv "$FILE" data/old/
+                  else
+                    # または単に [id].json
+                    FILE="data/${{ github.event.inputs.recipe_id }}.json"
+                    if [ -f "$FILE" ]; then
+                      mv "$FILE" data/old/
+                    else
+                      echo "Recipe file not found: ${{ github.event.inputs.recipe_id }}"
+                      exit 1
+                    fi
+                  fi
+
+            - name: Regenerate recipes.json
+              run: node api/recipes.json.js
+
+            - name: Commit and push
+              run: |
+                  git config --global user.name "github-actions[bot]"
+                  git config --global user.email "github-actions[bot]@users.noreply.github.com"
+                  git add data/ api/
+                  git commit -m "Delete recipe ${{ github.event.inputs.recipe_id }} (moved to old/)" || echo "No changes to commit"
+                  git push

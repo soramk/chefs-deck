@@ -16,16 +16,69 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Google Fonts -->
-    <link
-        href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Montserrat:wght@700&display=swap"
-        rel="stylesheet">
-
-    <!-- Lucide Icons (Script version) -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --brand-orange: #F59E0B;
+            --brand-red: #991B1B;
+            --brand-gold: #D97706;
+            --brand-dark: #1E293B;
+        }
+
+        .font-brand {
+            font-family: 'Montserrat', 'Noto Sans JP', sans-serif;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .bg-brand-gradient {
+            background: linear-gradient(135deg, var(--brand-orange), var(--brand-red));
+        }
+
+        .text-brand-orange {
+            color: var(--brand-orange);
+        }
+
+        .border-brand-orange {
+            border-color: var(--brand-orange);
+        }
+    </style>
 </head>
 
 <body>
@@ -132,24 +185,52 @@
             </svg>
         );
 
-        const IconChevronDown = ({ className }) => (
+        const IconSettings = ({ className }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                <path d="m6 9 6 6 6-6" />
+                <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+                <circle cx="12" cy="12" r="3" />
             </svg>
         );
 
-        const IconChevronUp = ({ className }) => (
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                <path d="m18 15-6-6-6 6" />
+        const IconHeart = ({ className, fill = "none" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
             </svg>
         );
 
-        const IconRefresh = ({ className }) => (
+        const IconTag = ({ className }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
-                <path d="M21 3v5h-5" />
-                <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
-                <path d="M3 21v-5h5" />
+                <path d="m12 2 10 10-9.5 9.5-10-10V2z" />
+                <path d="m7 7-.01.01" />
+            </svg>
+        );
+
+        const IconX = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+            </svg>
+        );
+
+        const IconGithub = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
+                <path d="M9 18c-4.51 2-5-2-7-2" />
+            </svg>
+        );
+
+        const IconCpu = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <rect width="16" height="16" x="4" y="4" rx="2" />
+                <rect width="6" height="6" x="9" y="9" rx="1" />
+                <path d="M15 2v2" />
+                <path d="M15 20v2" />
+                <path d="M2 15h2" />
+                <path d="M2 9h2" />
+                <path d="M20 15h2" />
+                <path d="M20 9h2" />
+                <path d="M9 2v2" />
+                <path d="M9 20v2" />
             </svg>
         );
 
@@ -177,7 +258,7 @@
 
         // --- Components ---
 
-        const RecipeCard = ({ recipe, onDelete, onEdit }) => {
+        const RecipeCard = ({ recipe, onDelete, onEdit, onToggleFavorite }) => {
             const [isExpanded, setIsExpanded] = useState(false);
             const [scaleFactor, setScaleFactor] = useState(1);
 
@@ -215,29 +296,35 @@
 
             return (
                 <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden card-hover transition-all duration-300 fade-in flex flex-col relative h-fit">
-                    <div className="h-1 w-full bg-indigo-500"></div>
-
-                    <div className="h-48 overflow-hidden relative group cursor-pointer" onClick={toggleExpand}>
-                        <img src={recipe.image} alt={recipe.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300" />
-                        <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold text-slate-700 shadow-sm">
-                            #{recipe.id.toString().slice(-4)}
-                        </div>
-                        <div className="absolute bottom-2 right-2 bg-indigo-600/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-bold shadow-md flex items-center gap-1">
-                            <IconCalculator className="w-3 h-3" />
-                            {isExpanded ? "計算中" : "分量計算"}
-                        </div>
-                    </div>
+                    <div className="h-1.5 w-full bg-brand-gradient"></div>
 
                     <div className="p-5 flex flex-col">
                         <div className="flex justify-between items-start mb-2">
-                            <h3 className="text-xl font-bold text-slate-800 line-clamp-2 font-brand cursor-pointer hover:text-indigo-600 transition-colors" onClick={toggleExpand}>
+                            <h3 className="text-xl font-bold text-slate-800 line-clamp-2 font-brand cursor-pointer hover:text-brand-orange transition-colors" onClick={toggleExpand}>
                                 {recipe.title}
                             </h3>
-                            <button onClick={toggleExpand} className="text-slate-400 hover:text-indigo-500 p-1">
-                                {isExpanded ? <IconChevronUp className="w-5 h-5" /> : <IconChevronDown className="w-5 h-5" />}
-                            </button>
+                            <div className="flex gap-1">
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); onToggleFavorite(recipe.id); }}
+                                    className={`p-1 transition-colors ${recipe.isFavorite ? 'text-brand-red' : 'text-slate-300 hover:text-brand-red'}`}
+                                >
+                                    <IconHeart className="w-5 h-5" fill={recipe.isFavorite ? "currentColor" : "none"} />
+                                </button>
+                                <button onClick={toggleExpand} className="text-slate-400 hover:text-brand-orange p-1">
+                                    {isExpanded ? <IconChevronUp className="w-5 h-5" /> : <IconChevronDown className="w-5 h-5" />}
+                                </button>
+                            </div>
                         </div>
+
+                        {recipe.tags && recipe.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mb-3">
+                                {recipe.tags.map((tag, idx) => (
+                                    <span key={idx} className="px-2 py-0.5 bg-slate-100 text-slate-500 rounded text-[10px] font-bold uppercase tracking-wider">
+                                        {tag}
+                                    </span>
+                                ))}
+                            </div>
+                        )}
 
                         {!isExpanded ? (
                             <div className="flex items-center gap-2 text-sm text-slate-500 mb-4">
@@ -250,14 +337,14 @@
                             </div>
                         ) : (
                             <div className="mb-4 fade-in">
-                                <div className="bg-indigo-50 rounded-lg p-3 mb-4 border border-indigo-100">
+                                <div className="bg-brand-orange/5 rounded-lg p-3 mb-4 border border-brand-orange/10">
                                     <div className="flex items-center justify-between mb-2">
-                                        <label className="text-xs font-bold text-indigo-800 uppercase tracking-wide flex items-center gap-1">
+                                        <label className="text-xs font-bold text-brand-orange uppercase tracking-wide flex items-center gap-1">
                                             <IconCalculator className="w-3 h-3" /> Smart Scaling
                                         </label>
                                         <button
                                             onClick={() => setScaleFactor(1)}
-                                            className="text-[10px] bg-white border border-indigo-200 text-indigo-600 px-2 py-0.5 rounded hover:bg-indigo-50 transition-colors"
+                                            className="text-[10px] bg-white border border-brand-orange/20 text-brand-orange px-2 py-0.5 rounded hover:bg-brand-orange/5 transition-colors"
                                         >
                                             リセット
                                         </button>
@@ -271,14 +358,14 @@
                                                     onChange={handleServingChange}
                                                     step="0.5"
                                                     min="0"
-                                                    className="w-full pl-8 pr-2 py-1.5 rounded bg-white border border-indigo-200 text-indigo-900 font-bold focus:ring-2 focus:ring-indigo-300 outline-none text-center"
+                                                    className="w-full pl-8 pr-2 py-1.5 rounded bg-white border border-brand-orange/20 text-brand-orange font-bold focus:ring-2 focus:ring-brand-orange/20 outline-none text-center"
                                                 />
-                                                <IconUsers className="w-4 h-4 text-indigo-400 absolute left-2 top-1/2 -translate-y-1/2" />
+                                                <IconUsers className="w-4 h-4 text-brand-orange/40 absolute left-2 top-1/2 -translate-y-1/2" />
                                             </div>
-                                            <div className="text-[10px] text-center text-indigo-500 mt-1 font-bold">人分を作る</div>
+                                            <div className="text-[10px] text-center text-brand-orange/60 mt-1 font-bold">人分を作る</div>
                                         </div>
                                     </div>
-                                    <p className="text-[10px] text-indigo-400 mt-2 text-center leading-tight">
+                                    <p className="text-[10px] text-brand-orange/40 mt-2 text-center leading-tight">
                                         下の材料の数値を変更しても<br />全体が自動計算されます
                                     </p>
                                 </div>
@@ -294,22 +381,36 @@
                                                 ? Math.round(parseFloat(ing.amount) * scaleFactor * 100) / 100
                                                 : ing.amount;
 
+                                            // Gram Conversion Logic
+                                            let gramValue = null;
+                                            if (isNumber && UNIT_CONVERSIONS[ing.name]) {
+                                                const conversion = UNIT_CONVERSIONS[ing.name];
+                                                if (ing.unit === "大さじ") gramValue = calculatedAmount * conversion.tbsp;
+                                                else if (ing.unit === "小さじ") gramValue = calculatedAmount * conversion.tsp;
+                                                else if (ing.unit === "カップ") gramValue = calculatedAmount * conversion.cup;
+                                            }
+
                                             return (
                                                 <div key={idx} className="flex items-center justify-between text-sm py-1 border-b border-slate-50 last:border-0 hover:bg-slate-50 rounded px-1 transition-colors group/row">
                                                     <span className="text-slate-700 font-medium truncate flex-1">{ing.name}</span>
                                                     <div className="flex items-center gap-1">
                                                         {isNumber ? (
-                                                            <input
-                                                                type="number"
-                                                                value={editingIngredient.index === idx ? editingIngredient.value : calculatedAmount}
-                                                                onChange={(e) => handleIngredientAmountChange(idx, ing.amount, e.target.value)}
-                                                                onBlur={() => setEditingIngredient({ index: -1, value: "" })}
-                                                                className="w-16 text-right font-bold text-slate-800 bg-transparent border-b border-transparent hover:border-slate-300 focus:border-indigo-500 focus:bg-white outline-none transition-all py-0.5 px-1 rounded text-sm"
-                                                            />
+                                                            <div className="flex flex-col items-end">
+                                                                <input
+                                                                    type="number"
+                                                                    value={editingIngredient.index === idx ? editingIngredient.value : calculatedAmount}
+                                                                    onChange={(e) => handleIngredientAmountChange(idx, ing.amount, e.target.value)}
+                                                                    onBlur={() => setEditingIngredient({ index: -1, value: "" })}
+                                                                    className="w-16 text-right font-bold text-slate-800 bg-transparent border-b border-transparent hover:border-slate-300 focus:border-brand-orange focus:bg-white outline-none transition-all py-0.5 px-1 rounded text-sm"
+                                                                />
+                                                                {gramValue && (
+                                                                    <span className="text-[10px] text-slate-400 font-bold">({Math.round(gramValue)}g)</span>
+                                                                )}
+                                                            </div>
                                                         ) : (
                                                             <span className="text-slate-500 text-xs">{ing.amount}</span>
                                                         )}
-                                                        <span className="text-slate-400 text-xs w-8 text-left">{ing.unit}</span>
+                                                        <span className="text-slate-400 text-xs w-10 text-left whitespace-nowrap overflow-hidden">{ing.unit}</span>
                                                     </div>
                                                 </div>
                                             );
@@ -338,10 +439,10 @@
 
                                     {recipe.notes && (
                                         <div className="mt-4 pt-4 border-t border-slate-100">
-                                            <label className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest block mb-1 px-1">
+                                            <label className="text-[10px] font-bold text-brand-orange uppercase tracking-widest block mb-1 px-1">
                                                 Notes
                                             </label>
-                                            <p className="text-xs text-slate-500 italic bg-slate-50 p-3 rounded-lg border border-slate-100">
+                                            <p className="text-xs text-slate-500 italic bg-brand-orange/5 p-3 rounded-lg border border-brand-orange/10">
                                                 {recipe.notes}
                                             </p>
                                         </div>
@@ -380,14 +481,154 @@
             );
         };
 
+        const SettingsModal = ({ isOpen, onClose, settings, onSaveSettings }) => {
+            const [activeTab, setActiveTab] = useState("ai");
+            const [tempSettings, setTempSettings] = useState(settings);
+
+            useEffect(() => {
+                if (isOpen) setTempSettings(settings);
+            }, [isOpen, settings]);
+
+            if (!isOpen) return null;
+
+            const handleSave = () => {
+                onSaveSettings(tempSettings);
+                onClose();
+            };
+
+            return (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm fade-in">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in duration-200">
+                        <div className="bg-brand-gradient p-6 text-white flex justify-between items-center">
+                            <h2 className="text-xl font-bold font-brand flex items-center gap-2">
+                                <IconSettings className="w-6 h-6" /> Settings
+                            </h2>
+                            <button onClick={onClose} className="hover:bg-white/20 p-1 rounded-full transition-colors">
+                                <IconX className="w-6 h-6" />
+                            </button>
+                        </div>
+
+                        <div className="flex border-b border-slate-100">
+                            <button
+                                onClick={() => setActiveTab("ai")}
+                                className={`flex-1 py-3 text-sm font-bold transition-colors ${activeTab === 'ai' ? 'text-brand-orange border-b-2 border-brand-orange' : 'text-slate-400 hover:text-slate-600'}`}
+                            >
+                                <div className="flex items-center justify-center gap-2">
+                                    <IconCpu className="w-4 h-4" /> AI設定
+                                </div>
+                            </button>
+                            <button
+                                onClick={() => setActiveTab("github")}
+                                className={`flex-1 py-3 text-sm font-bold transition-colors ${activeTab === 'github' ? 'text-brand-orange border-b-2 border-brand-orange' : 'text-slate-400 hover:text-slate-600'}`}
+                            >
+                                <div className="flex items-center justify-center gap-2">
+                                    <IconGithub className="w-4 h-4" /> GitHub設定
+                                </div>
+                            </button>
+                        </div>
+
+                        <div className="p-6 space-y-4">
+                            {activeTab === "ai" ? (
+                                <div className="space-y-4 fade-in">
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 pl-1">API Key</label>
+                                        <input
+                                            type="password"
+                                            className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none transition-all text-sm"
+                                            value={tempSettings.geminiApiKey}
+                                            onChange={(e) => setTempSettings({ ...tempSettings, geminiApiKey: e.target.value })}
+                                            placeholder="Gemini API Key"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 pl-1">Default Model</label>
+                                        <input
+                                            type="text"
+                                            className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none transition-all text-sm"
+                                            value={tempSettings.selectedModel}
+                                            onChange={(e) => setTempSettings({ ...tempSettings, selectedModel: e.target.value })}
+                                            placeholder="gemini-3-flash-preview"
+                                        />
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="space-y-4 fade-in">
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 pl-1">Personal Access Token</label>
+                                        <input
+                                            type="password"
+                                            className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none transition-all text-sm"
+                                            value={tempSettings.githubToken}
+                                            onChange={(e) => setTempSettings({ ...tempSettings, githubToken: e.target.value })}
+                                            placeholder="ghp_..."
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 pl-1">Owner</label>
+                                            <input
+                                                type="text"
+                                                className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none transition-all text-sm"
+                                                value={tempSettings.githubOwner}
+                                                onChange={(e) => setTempSettings({ ...tempSettings, githubOwner: e.target.value })}
+                                                placeholder="User / Org"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 pl-1">Repo</label>
+                                            <input
+                                                type="text"
+                                                className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none transition-all text-sm"
+                                                value={tempSettings.githubRepo}
+                                                onChange={(e) => setTempSettings({ ...tempSettings, githubRepo: e.target.value })}
+                                                placeholder="Repository name"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="p-6 bg-slate-50 border-t border-slate-100 flex gap-3">
+                            <button onClick={onClose} className="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-100 rounded-xl transition-colors">Cancel</button>
+                            <button onClick={handleSave} className="flex-1 py-3 text-sm font-bold text-white bg-brand-orange hover:bg-brand-gold rounded-xl shadow-md transition-colors">Save Changes</button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Unit Conversions (Delish Kitchen) ---
+        const UNIT_CONVERSIONS = {
+            "水": { tbsp: 15, tsp: 5, cup: 200 },
+            "酒": { tbsp: 15, tsp: 5, cup: 200 },
+            "酢": { tbsp: 15, tsp: 5, cup: 200 },
+            "だし汁": { tbsp: 15, tsp: 5, cup: 200 },
+            "牛乳": { tbsp: 15, tsp: 5, cup: 210 },
+            "しょうゆ": { tbsp: 18, tsp: 6, cup: 230 },
+            "みりん": { tbsp: 18, tsp: 6, cup: 230 },
+            "みそ": { tbsp: 18, tsp: 6, cup: 230 },
+            "塩": { tbsp: 18, tsp: 6, cup: 240 },
+            "ケチャップ": { tbsp: 18, tsp: 6, cup: 240 },
+            "砂糖": { tbsp: 9, tsp: 3, cup: 130 },
+            "上白糖": { tbsp: 9, tsp: 3, cup: 130 },
+            "小麦粉": { tbsp: 9, tsp: 3, cup: 110 },
+            "片栗粉": { tbsp: 9, tsp: 3, cup: 130 },
+            "油": { tbsp: 12, tsp: 4, cup: 180 },
+            "サラダ油": { tbsp: 12, tsp: 4, cup: 180 },
+            "バター": { tbsp: 12, tsp: 4, cup: 180 },
+            "マヨネーズ": { tbsp: 12, tsp: 4, cup: 190 },
+            "はちみつ": { tbsp: 21, tsp: 7, cup: 280 }
+        };
+
         const RecipeEditor = ({ initialData, onSave, onCancel }) => {
             const [formData, setFormData] = useState(initialData || {
                 title: "",
                 url: "",
-                image: "https://images.unsplash.com/photo-1495521841625-f462cd2f24d5?w=500&auto=format&fit=crop&q=60",
                 ingredients: [{ name: "", amount: "", unit: "" }],
                 steps: [""],
                 baseServings: 2,
+                tags: [],
                 notes: ""
             });
 
@@ -441,10 +682,10 @@
 
             return (
                 <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-6 fade-in max-w-3xl mx-auto relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 to-purple-500"></div>
+                    <div className="absolute top-0 left-0 w-full h-1.5 bg-brand-gradient"></div>
                     <h2 className="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2 font-brand">
-                        <IconEdit className="text-indigo-500" />
-                        Edit Card
+                        <IconEdit className="text-brand-orange" />
+                        {formData.id ? 'Edit Recipe' : 'Add Recipe'}
                     </h2>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
@@ -455,7 +696,7 @@
                                     <input
                                         type="text"
                                         required
-                                        className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 outline-none transition-all"
+                                        className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none transition-all"
                                         value={formData.title}
                                         onChange={(e) => handleChange("title", e.target.value)}
                                         placeholder="例：絶品ハンバーグ"
@@ -467,7 +708,7 @@
                                         <input
                                             type="number"
                                             min="1"
-                                            className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 outline-none transition-all pl-10"
+                                            className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none transition-all pl-10"
                                             value={formData.baseServings}
                                             onChange={(e) => handleChange("baseServings", e.target.value === "" ? "" : parseFloat(e.target.value))}
                                         />
@@ -476,33 +717,37 @@
                                     </div>
                                 </div>
                                 <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">タグ (カンマ区切り)</label>
+                                    <div className="relative">
+                                        <input
+                                            type="text"
+                                            className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none transition-all pl-10"
+                                            value={formData.tags ? formData.tags.join(', ') : ""}
+                                            onChange={(e) => handleChange("tags", e.target.value.split(',').map(t => t.trim()).filter(t => t))}
+                                            placeholder="和食, 魚, 時短..."
+                                        />
+                                        <IconTag className="w-5 h-5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="space-y-4">
+                                <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-1">参考URL</label>
                                     <input
                                         type="url"
-                                        className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 outline-none transition-all text-sm text-slate-600"
+                                        className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none transition-all text-sm text-slate-600"
                                         value={formData.url}
                                         onChange={(e) => handleChange("url", e.target.value)}
                                         placeholder="https://..."
                                     />
                                 </div>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">画像URL</label>
-                                <div className="relative mb-2">
-                                    <input
-                                        type="text"
-                                        className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 outline-none transition-all text-sm"
-                                        value={formData.image}
-                                        onChange={(e) => handleChange("image", e.target.value)}
-                                        placeholder="https://..."
-                                    />
-                                </div>
-                                <div className="h-32 w-full rounded-lg overflow-hidden bg-slate-100 border border-slate-200">
-                                    <img
-                                        src={formData.image || "https://placehold.co/600x400?text=No+Image"}
-                                        alt="Preview"
-                                        className="w-full h-full object-cover"
-                                        onError={(e) => e.target.src = "https://placehold.co/600x400?text=No+Image"}
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">備考</label>
+                                    <textarea
+                                        className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none transition-all text-sm min-h-[100px]"
+                                        value={formData.notes}
+                                        onChange={(e) => handleChange("notes", e.target.value)}
+                                        placeholder="コツやポイントなど"
                                     />
                                 </div>
                             </div>
@@ -511,7 +756,7 @@
                         <div>
                             <div className="flex justify-between items-center mb-2">
                                 <label className="text-lg font-bold text-slate-700 font-brand">Ingredients</label>
-                                <button type="button" onClick={addIngredient} className="text-sm text-indigo-600 hover:text-indigo-700 font-medium flex items-center gap-1">
+                                <button type="button" onClick={addIngredient} className="text-sm text-brand-orange hover:text-brand-gold font-bold flex items-center gap-1">
                                     <IconPlus className="w-4 h-4" /> 追加
                                 </button>
                             </div>
@@ -526,7 +771,7 @@
                                         <div className="col-span-6">
                                             <input
                                                 type="text"
-                                                className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:border-indigo-500 outline-none text-sm"
+                                                className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:border-brand-orange outline-none text-sm"
                                                 value={ing.name}
                                                 onChange={(e) => handleIngredientChange(idx, "name", e.target.value)}
                                                 placeholder="材料名"
@@ -535,7 +780,7 @@
                                         <div className="col-span-3">
                                             <input
                                                 type="number"
-                                                className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:border-indigo-500 outline-none text-sm"
+                                                className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:border-brand-orange outline-none text-sm"
                                                 value={ing.amount}
                                                 onChange={(e) => handleIngredientChange(idx, "amount", e.target.value)}
                                                 placeholder="例: 200"
@@ -544,7 +789,7 @@
                                         <div className="col-span-2">
                                             <input
                                                 type="text"
-                                                className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:border-indigo-500 outline-none text-sm"
+                                                className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:border-brand-orange outline-none text-sm"
                                                 value={ing.unit}
                                                 onChange={(e) => handleIngredientChange(idx, "unit", e.target.value)}
                                                 placeholder="g/個"
@@ -563,7 +808,7 @@
                         <div>
                             <div className="flex justify-between items-center mb-2">
                                 <label className="text-lg font-bold text-slate-700 font-brand">Directions</label>
-                                <button type="button" onClick={addStep} className="text-sm text-indigo-600 hover:text-indigo-700 font-medium flex items-center gap-1">
+                                <button type="button" onClick={addStep} className="text-sm text-brand-orange hover:text-brand-gold font-bold flex items-center gap-1">
                                     <IconPlus className="w-4 h-4" /> 追加
                                 </button>
                             </div>
@@ -572,7 +817,7 @@
                                     <div key={idx} className="flex gap-2 items-start">
                                         <span className="mt-2 text-xs font-bold text-slate-400 w-6 text-center">{idx + 1}</span>
                                         <textarea
-                                            className="flex-1 px-3 py-2 rounded-lg border border-slate-300 focus:border-indigo-500 outline-none text-sm min-h-[60px]"
+                                            className="flex-1 px-3 py-2 rounded-lg border border-slate-300 focus:border-brand-orange outline-none text-sm min-h-[60px]"
                                             value={step}
                                             onChange={(e) => handleStepChange(idx, e.target.value)}
                                             placeholder="工程を入力..."
@@ -595,7 +840,7 @@
                             </button>
                             <button
                                 type="submit"
-                                className="flex-1 py-3 px-4 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 shadow-md hover:shadow-lg font-bold transition-all flex justify-center items-center gap-2"
+                                className="flex-1 py-3 px-4 rounded-lg bg-brand-orange text-white hover:bg-brand-gold shadow-md hover:shadow-lg font-bold transition-all flex justify-center items-center gap-2"
                             >
                                 <IconSave className="w-5 h-5" />
                                 デッキに保存
@@ -614,11 +859,24 @@
             const [editingRecipe, setEditingRecipe] = useState(null);
             const [importUrl, setImportUrl] = useState("");
             const [useGemini, setUseGemini] = useState(false);
-            const [geminiApiKey, setGeminiApiKey] = useState(localStorage.getItem('GEMINI_API_KEY') || "");
-            const [availableModels, setAvailableModels] = useState(['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-2.0-flash-exp']);
-            const [selectedModel, setSelectedModel] = useState(localStorage.getItem('SELECTED_GEMINI_MODEL') || 'gemini-1.5-flash');
             const [isLoading, setIsLoading] = useState(false);
             const [notification, setNotification] = useState(null);
+
+            // Search and Filter State
+            const [searchTerm, setSearchTerm] = useState("");
+            const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
+
+            // Settings State
+            const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+            const [settings, setSettings] = useState({
+                geminiApiKey: localStorage.getItem('GEMINI_API_KEY') || "",
+                selectedModel: localStorage.getItem('SELECTED_GEMINI_MODEL') || 'gemini-3-flash-preview',
+                githubToken: localStorage.getItem('GITHUB_TOKEN') || "",
+                githubOwner: localStorage.getItem('GITHUB_OWNER') || "",
+                githubRepo: localStorage.getItem('GITHUB_REPO') || "chefs-deck"
+            });
+
+            const [availableModels, setAvailableModels] = useState([]);
 
             // モデル一覧を取得
             const fetchModels = async (key) => {
@@ -640,10 +898,55 @@
             };
 
             useEffect(() => {
-                if (geminiApiKey) {
-                    fetchModels(geminiApiKey);
+                if (settings.geminiApiKey) {
+                    fetchModels(settings.geminiApiKey);
+                }
+
+                // 初回のみ：GitHubリポジトリ情報を自動解決
+                if (!settings.githubOwner || !settings.githubRepo) {
+                    if (window.location.hostname.includes('github.io')) {
+                        const pathParts = window.location.pathname.split('/').filter(p => p);
+                        const owner = window.location.hostname.split('.')[0];
+                        const repo = pathParts[0] || 'chefs-deck';
+                        setSettings(prev => ({ ...prev, githubOwner: owner, githubRepo: repo }));
+                        localStorage.setItem('GITHUB_OWNER', owner);
+                        localStorage.setItem('GITHUB_REPO', repo);
+                    }
                 }
             }, []);
+
+            const handleUpdateSettings = (newSettings) => {
+                setSettings(newSettings);
+                localStorage.setItem('GEMINI_API_KEY', newSettings.geminiApiKey);
+                localStorage.setItem('SELECTED_GEMINI_MODEL', newSettings.selectedModel);
+                localStorage.setItem('GITHUB_TOKEN', newSettings.githubToken);
+                localStorage.setItem('GITHUB_OWNER', newSettings.githubOwner);
+                localStorage.setItem('GITHUB_REPO', newSettings.githubRepo);
+                showNotification("設定を保存しました");
+                if (newSettings.geminiApiKey) fetchModels(newSettings.geminiApiKey);
+            };
+
+            const toggleFavorite = (id) => {
+                const updatedRecipes = recipes.map(r => r.id === id ? { ...r, isFavorite: !r.isFavorite } : r);
+                setRecipes(updatedRecipes);
+                const target = updatedRecipes.find(r => r.id === id);
+
+                // GitHubに同期
+                dispatchWorkflow('save-recipe.yml', {
+                    recipe_id: id.toString(),
+                    recipe_json: JSON.stringify(target)
+                });
+            };
+
+            const filteredRecipes = useMemo(() => {
+                return recipes.filter(r => {
+                    const matchesSearch = r.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                        (r.ingredients && r.ingredients.some(i => i.name.toLowerCase().includes(searchTerm.toLowerCase()))) ||
+                        (r.tags && r.tags.some(t => t.toLowerCase().includes(searchTerm.toLowerCase())));
+                    const matchesFavorite = !showOnlyFavorites || r.isFavorite;
+                    return matchesSearch && matchesFavorite;
+                });
+            }, [recipes, searchTerm, showOnlyFavorites]);
 
             // レシピデータを読み込む
             const loadRecipes = async () => {
@@ -702,28 +1005,21 @@
 
             // GitHub Actions ワークフローを実行
             const dispatchWorkflow = async (workflowId, inputs) => {
-                const githubToken = localStorage.getItem('GITHUB_TOKEN');
+                const githubToken = settings.githubToken;
                 if (!githubToken) {
                     showNotification("GitHub Tokenを設定してください");
+                    setIsSettingsOpen(true);
                     return false;
                 }
 
-                // リポジトリ情報を取得
-                let repoOwner = localStorage.getItem('GITHUB_OWNER');
-                let repoName = localStorage.getItem('GITHUB_REPO');
+                const repoOwner = settings.githubOwner;
+                const repoName = settings.githubRepo;
 
                 if (!repoOwner || !repoName) {
-                    if (window.location.hostname.includes('github.io')) {
-                        const pathParts = window.location.pathname.split('/').filter(p => p);
-                        repoOwner = window.location.hostname.split('.')[0];
-                        repoName = pathParts[0] || 'chefs-deck';
-                    } else {
-                        repoOwner = prompt('GitHubユーザー名を入力してください:');
-                        repoName = prompt('リポジトリ名を入力してください:');
-                    }
+                    showNotification("リポジトリ情報を設定してください");
+                    setIsSettingsOpen(true);
+                    return false;
                 }
-
-                if (!repoOwner || !repoName) return false;
 
                 try {
                     // デフォルトブランチを取得
@@ -863,12 +1159,11 @@
                     }
 
                     // ワークフローを実行
-                    const workflowId = 'scrape-recipe.yml';
                     const success = await dispatchWorkflow(workflowId, {
                         url: importUrl,
                         use_gemini: useGemini ? 'true' : 'false',
-                        gemini_model: selectedModel,
-                        gemini_api_key: useGemini ? geminiApiKey : ""
+                        gemini_model: settings.selectedModel,
+                        gemini_api_key: useGemini ? settings.geminiApiKey : ""
                     });
 
                     if (success) {
@@ -876,7 +1171,7 @@
                         showNotification(
                             <span>
                                 スクレイピングを開始しました。<br />
-                                <a href={actionsUrl} target="_blank" className="underline font-bold text-indigo-300 hover:text-indigo-200">
+                                <a href={actionsUrl} target="_blank" className="underline font-bold text-orange-200 hover:text-orange-100">
                                     進捗をActionsで確認する
                                 </a>
                             </span>
@@ -896,12 +1191,9 @@
                     if (err.message.includes('Failed to fetch') || err.name === 'TypeError') {
                         const workflowUrl = `https://github.com/${repoOwner || 'your-username'}/${repoName || 'chefs-deck'}/actions/workflows/scrape-recipe.yml`;
                         showNotification(
-                            `GitHub Actionsページを開きました。\n` +
-                            `「Run workflow」をクリックして、以下の値を入力してください：\n` +
+                            `GitHub Actionsでの実行が必要です。\n` +
                             `URL: ${importUrl}\n` +
-                            `Use Gemini: ${useGemini ? 'true' : 'false'}\n` +
-                            `Gemini Model: ${selectedModel}\n` +
-                            `Gemini API Key: ${useGemini ? (geminiApiKey ? '(入力済み)' : '(未設定)') : 'N/A'}`
+                            `Model: ${settings.selectedModel}`
                         );
                         window.open(workflowUrl, '_blank');
                     } else {
@@ -940,9 +1232,15 @@
             };
 
             const handleDelete = (id) => {
-                if (window.confirm("このカードをデッキから破棄しますか？")) {
+                if (window.confirm("このカードをデッキから破棄しますか？\n(old フォルダへ移動し、後で復元可能です)")) {
                     setRecipes(recipes.filter(r => r.id !== id));
-                    showNotification("カードを破棄しました");
+
+                    // GitHub Actionで old/ フォルダへ移動
+                    dispatchWorkflow('delete-recipe.yml', {
+                        recipe_id: id.toString()
+                    });
+
+                    showNotification("カードを old フォルダへ移動しました");
                 }
             };
 
@@ -958,50 +1256,65 @@
 
             return (
                 <div className="min-h-screen pb-10 font-sans text-slate-600">
-                    <header className="bg-white border-b border-slate-200 sticky top-0 z-10 shadow-sm">
+                    <header className="bg-white border-b border-slate-200 sticky top-0 z-10 shadow-sm backdrop-blur-md bg-white/90">
                         <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-                            <div className="flex items-center gap-2 cursor-pointer group" onClick={() => setView("list")}>
-                                <div className="bg-indigo-600 text-white p-2 rounded-lg group-hover:bg-indigo-700 transition-colors">
+                            <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setView("list")}>
+                                <div className="bg-brand-gradient text-white p-2.5 rounded-xl shadow-lg group-hover:scale-105 transition-all">
                                     <IconLayers className="w-6 h-6" />
                                 </div>
                                 <div className="flex flex-col">
-                                    <h1 className="text-xl font-bold text-slate-800 tracking-tight leading-none">Chef's Deck</h1>
-                                    <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest leading-none mt-1">Recipe Collection</span>
+                                    <h1 className="text-xl font-bold text-slate-800 tracking-tight leading-none font-brand">Chef's Deck</h1>
+                                    <span className="text-[10px] font-bold text-brand-orange uppercase tracking-widest leading-none mt-1">Recipe Collection</span>
                                 </div>
                             </div>
 
-                            {view === "list" && (
+                            <div className="flex items-center gap-2">
+                                {view === "list" && (
+                                    <button
+                                        onClick={handleCreateNew}
+                                        className="bg-slate-800 text-white p-2.5 rounded-xl hover:bg-slate-700 transition-all shadow-md group"
+                                        title="Add Card"
+                                    >
+                                        <IconPlus className="w-5 h-5 group-hover:rotate-90 transition-transform" />
+                                    </button>
+                                )}
                                 <button
-                                    onClick={handleCreateNew}
-                                    className="bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-slate-700 transition-colors flex items-center gap-2 shadow-sm"
+                                    onClick={() => setIsSettingsOpen(true)}
+                                    className="bg-slate-100 text-slate-600 p-2.5 rounded-xl hover:bg-slate-200 transition-all hover:rotate-45"
+                                    title="Settings"
                                 >
-                                    <IconPlus className="w-4 h-4" />
-                                    <span className="hidden sm:inline">Add Card</span>
+                                    <IconSettings className="w-5 h-5" />
                                 </button>
-                            )}
+                            </div>
                         </div>
                     </header>
 
+                    <SettingsModal
+                        isOpen={isSettingsOpen}
+                        onClose={() => setIsSettingsOpen(false)}
+                        settings={settings}
+                        onSaveSettings={handleUpdateSettings}
+                    />
+
                     {notification && (
-                        <div className="fixed top-20 right-4 bg-slate-800 text-white px-6 py-3 rounded-lg shadow-xl z-50 fade-in flex items-center gap-2">
-                            <div className="w-2 h-2 bg-indigo-400 rounded-full"></div>
-                            {notification}
+                        <div className="fixed top-20 right-4 bg-slate-800 text-white px-6 py-3 rounded-lg shadow-xl z-50 border-l-4 border-brand-orange fade-in flex items-center gap-3">
+                            <div className="w-2 h-2 bg-brand-orange rounded-full animate-pulse"></div>
+                            <span className="text-sm font-bold">{notification}</span>
                         </div>
                     )}
 
                     <main className="max-w-5xl mx-auto px-4 mt-8">
 
                         {view === "list" && (
-                            <div className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl p-6 md:p-10 mb-10 shadow-lg text-white relative overflow-hidden">
+                            <div className="bg-gradient-to-br from-brand-orange to-brand-red rounded-2xl p-6 md:p-10 mb-10 shadow-lg text-white relative overflow-hidden">
                                 <div className="absolute top-0 right-0 opacity-10 transform translate-x-10 -translate-y-10">
                                     <IconLayers className="w-64 h-64" />
                                 </div>
 
                                 <div className="relative z-10 max-w-2xl">
-                                    <h2 className="text-2xl md:text-3xl font-bold mb-2 font-brand">Build Your Deck.</h2>
-                                    <p className="mb-6 text-indigo-100">
-                                        Web上のレシピをカード化して、あなただけの最強デッキ（レシピ集）を構築しよう。<br className="hidden md:inline" />
-                                        人数や手持ちの材料に合わせて、分量を自動計算します。
+                                    <h2 className="text-2xl md:text-3xl font-bold mb-2 font-brand">Build Your Ultimate Collection.</h2>
+                                    <p className="mb-6 text-orange-50/80 font-medium leading-relaxed max-w-lg">
+                                        Web上のレシピをカード化。人数に合わせて分量を自動計算する、あなただけのカードデッキ。
                                     </p>
 
                                     <form onSubmit={handleImport} className="space-y-3">
@@ -1047,21 +1360,20 @@
                                                             type="password"
                                                             placeholder="Gemini API Key..."
                                                             className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-1.5 text-xs text-white placeholder-white/50 focus:bg-white/20 outline-none transition-all"
-                                                            value={geminiApiKey}
+                                                            value={settings.geminiApiKey}
                                                             onChange={(e) => {
-                                                                setGeminiApiKey(e.target.value);
-                                                                localStorage.setItem('GEMINI_API_KEY', e.target.value);
-                                                                if (e.target.value.length > 20) fetchModels(e.target.value);
+                                                                const newSettings = { ...settings, geminiApiKey: e.target.value };
+                                                                handleUpdateSettings(newSettings);
                                                             }}
                                                         />
                                                     </div>
                                                     <div className="relative">
                                                         <select
                                                             className="bg-white/10 border border-white/20 rounded-lg px-3 py-1.5 text-xs text-white focus:bg-white/20 outline-none transition-all cursor-pointer appearance-none pr-8"
-                                                            value={selectedModel}
+                                                            value={settings.selectedModel}
                                                             onChange={(e) => {
-                                                                setSelectedModel(e.target.value);
-                                                                localStorage.setItem('SELECTED_GEMINI_MODEL', e.target.value);
+                                                                const newSettings = { ...settings, selectedModel: e.target.value };
+                                                                handleUpdateSettings(newSettings);
                                                             }}
                                                         >
                                                             {availableModels.map(m => <option key={m} value={m} className="text-slate-800">{m}</option>)}
@@ -1072,12 +1384,8 @@
                                             )}
                                         </div>
                                     </form>
-                                    <div className="text-xs mt-3 text-indigo-200 opacity-70 space-y-1">
-                                        <p>※GitHub Actionsページで手動実行してください。URLとオプションを入力して実行します。</p>
-                                        <p className="opacity-80">
-                                            {"💡 UIでAPIキーを入力していない場合は、リポジトリのSettings > Secrets and variables > Actionsで"}
-                                            <code className="bg-white/20 px-1 rounded mx-1">GEMINI_API_KEY</code>{"を設定してください。"}
-                                        </p>
+                                    <div className="text-xs mt-3 text-orange-200/50 space-y-1">
+                                        <p>※GitHub Actionsの設定が必要です。PATとリポジトリ名を確認してください。</p>
                                     </div>
                                 </div>
                             </div>
@@ -1085,35 +1393,58 @@
 
                         {view === "list" ? (
                             <div>
-                                <div className="flex items-center justify-between mb-6">
-                                    <h3 className="text-lg font-bold text-slate-700 flex items-center gap-2">
-                                        <IconLayers className="w-5 h-5 text-indigo-500" />
-                                        Your Deck
-                                        <span className="bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full text-xs">{recipes.length}</span>
-                                    </h3>
-                                    <button
-                                        onClick={loadRecipes}
-                                        className="text-indigo-500 hover:text-indigo-600 p-2 rounded-full hover:bg-indigo-50 transition-colors flex items-center gap-1 text-sm font-bold"
-                                        title="最新の状態に更新"
-                                    >
-                                        <IconRefresh className="w-4 h-4" />
-                                        更新
-                                    </button>
+                                <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                                    <div className="flex items-center gap-4">
+                                        <h3 className="text-xl font-extrabold text-slate-800 font-brand flex items-center gap-2">
+                                            <IconLayers className="w-6 h-6 text-brand-orange" />
+                                            Your Deck
+                                            <span className="text-slate-300 font-light ml-1">/</span>
+                                            <span className="bg-slate-100 text-slate-500 px-2.5 py-0.5 rounded-full text-xs font-bold">{filteredRecipes.length}</span>
+                                        </h3>
+                                        <button
+                                            onClick={() => setShowOnlyFavorites(!showOnlyFavorites)}
+                                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${showOnlyFavorites ? 'bg-brand-red text-white shadow-md' : 'bg-slate-100 text-slate-400 hover:bg-slate-200'}`}
+                                        >
+                                            <IconHeart className="w-3.5 h-3.5" fill={showOnlyFavorites ? "currentColor" : "none"} />
+                                            Favorites
+                                        </button>
+                                    </div>
+
+                                    <div className="flex flex-1 max-w-md items-center gap-2">
+                                        <div className="relative flex-1">
+                                            <IconSearch className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                                            <input
+                                                type="text"
+                                                placeholder="Search recipes or ingredients..."
+                                                className="w-full pl-10 pr-4 py-2 bg-slate-100 border-none rounded-xl text-sm focus:ring-2 focus:ring-brand-orange transition-all"
+                                                value={searchTerm}
+                                                onChange={(e) => setSearchTerm(e.target.value)}
+                                            />
+                                        </div>
+                                        <button
+                                            onClick={loadRecipes}
+                                            className="bg-white border border-slate-200 text-slate-400 p-2 rounded-xl hover:text-brand-orange hover:border-brand-orange transition-all shadow-sm"
+                                            title="Refresh Deck"
+                                        >
+                                            <IconRefresh className="w-5 h-5" />
+                                        </button>
+                                    </div>
                                 </div>
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {recipes.length === 0 ? (
-                                        <div className="col-span-full text-center py-20 text-slate-400 bg-white rounded-2xl border border-dashed border-slate-300">
-                                            <IconLayers className="w-16 h-16 mx-auto mb-4 opacity-20" />
-                                            <p>デッキが空です。<br />URLを取り込んで最初のカードを追加しましょう。</p>
+                                    {filteredRecipes.length === 0 ? (
+                                        <div className="col-span-full text-center py-20 text-slate-400 bg-white rounded-3xl border-2 border-dashed border-slate-100">
+                                            <IconLayers className="w-16 h-16 mx-auto mb-4 opacity-10" />
+                                            <p className="font-medium">{searchTerm || showOnlyFavorites ? "該当するカードが見つかりません" : "デッキが空です"}</p>
                                         </div>
                                     ) : (
-                                        recipes.map(recipe => (
+                                        filteredRecipes.map(recipe => (
                                             <RecipeCard
                                                 key={recipe.id}
                                                 recipe={recipe}
                                                 onDelete={handleDelete}
                                                 onEdit={handleEdit}
+                                                onToggleFavorite={toggleFavorite}
                                             />
                                         ))
                                     )}
