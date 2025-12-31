@@ -1036,13 +1036,17 @@
 
         const App = () => {
             const [recipes, setRecipes] = useState([]);
-            const [decks, setDecks] = useState([]);
+            const [decks, setDecks] = useState(() => {
+                const saved = localStorage.getItem('chefs-deck-decks');
+                return saved ? JSON.parse(saved) : [];
+            });
             const [selectedDeckId, setSelectedDeckId] = useState(null);
             const [globalScale, setGlobalScale] = useState(1);
             const [view, setView] = useState("list");
             const [editingRecipe, setEditingRecipe] = useState(null);
             const [isDeckCreatorOpen, setIsDeckCreatorOpen] = useState(false);
             const [deckFormData, setDeckFormData] = useState({ name: "", recipeIds: [] });
+            const [deckSearchQuery, setDeckSearchQuery] = useState("");
             const [isSidebarOpen, setIsSidebarOpen] = useState(true);
             const [importUrl, setImportUrl] = useState("");
             const [isLoading, setIsLoading] = useState(false);
@@ -1127,41 +1131,38 @@
                     const hasRecipe = deck.recipeIds.includes(recipeId);
 
                     if (isInNext && !hasRecipe) {
-                        const newDeck = { ...deck, recipeIds: [...deck.recipeIds, recipeId] };
-                        dispatchWorkflow('save-deck.yml', {
-                            deck_id: newDeck.id,
-                            deck_json: JSON.stringify(newDeck)
-                        }, true);
-                        return newDeck;
+                        return { ...deck, recipeIds: [...deck.recipeIds, recipeId] };
                     } else if (!isInNext && hasRecipe) {
-                        const newDeck = { ...deck, recipeIds: deck.recipeIds.filter(id => id !== recipeId) };
-                        dispatchWorkflow('save-deck.yml', {
-                            deck_id: newDeck.id,
-                            deck_json: JSON.stringify(newDeck)
-                        }, true);
-                        return newDeck;
+                        return { ...deck, recipeIds: deck.recipeIds.filter(id => id !== recipeId) };
                     }
                     return deck;
                 });
 
                 setDecks(updatedDecks);
+                localStorage.setItem('chefs-deck-decks', JSON.stringify(updatedDecks));
                 showNotification("デッキへの登録を更新しました");
             };
 
             const toggleFavorite = (id) => {
-                const updatedRecipes = recipes.map(r => r.id === id ? { ...r, isFavorite: !r.isFavorite } : r);
-                setRecipes(updatedRecipes);
-                const target = updatedRecipes.find(r => r.id === id);
+                const savedFavorites = JSON.parse(localStorage.getItem('chefs-deck-favorites') || '[]');
+                const isNowFavorite = !savedFavorites.includes(id);
 
-                // GitHubに同期
-                dispatchWorkflow('save-recipe.yml', {
-                    recipe_id: id.toString(),
-                    recipe_json: JSON.stringify(target)
-                }, true); // silent sync
+                let nextFavorites;
+                if (isNowFavorite) {
+                    nextFavorites = [...savedFavorites, id];
+                } else {
+                    nextFavorites = savedFavorites.filter(fid => fid !== id);
+                }
+
+                localStorage.setItem('chefs-deck-favorites', JSON.stringify(nextFavorites));
+
+                // Trigger re-render by updating recipes state (isFavorite is virtual now)
+                setRecipes(prev => prev.map(r => r.id === id ? { ...r, _toggle: Date.now() } : r));
             };
 
             const filteredRecipes = useMemo(() => {
-                let list = recipes;
+                const favoriteIds = JSON.parse(localStorage.getItem('chefs-deck-favorites') || '[]');
+                let list = recipes.map(r => ({ ...r, isFavorite: favoriteIds.includes(r.id) }));
 
                 // Deck Filter
                 if (selectedDeckId) {
@@ -1182,26 +1183,23 @@
 
             const loadRecipes = async () => {
                 try {
-                    const [recipeRes, deckRes] = await Promise.all([
-                        fetch(`api/recipes.json?t=${Date.now()}`),
-                        fetch(`api/decks.json?t=${Date.now()}`)
-                    ]);
-
+                    const recipeRes = await fetch(`api/recipes.json?t=${Date.now()}`);
                     if (recipeRes.ok) {
                         const data = await recipeRes.json();
                         setRecipes(Array.isArray(data) ? data.map(migrateRecipe) : []);
                     }
 
-                    if (deckRes.ok) {
-                        const data = await deckRes.json();
-                        setDecks(Array.isArray(data) ? data : []);
+                    // LocalStorageから読み込み（初期化時に一度行っているが、明示的なリロード時にも反映）
+                    const savedDecks = localStorage.getItem('chefs-deck-decks');
+                    if (savedDecks) {
+                        setDecks(JSON.parse(savedDecks));
                     }
                 } catch (error) {
                     console.error("Failed to load data:", error);
                 }
             };
 
-            const handleCreateDeck = async () => {
+            const handleCreateDeck = () => {
                 if (!deckFormData.name || deckFormData.recipeIds.length === 0) {
                     showNotification("デッキ名とレシピを1つ以上選択してください");
                     return;
@@ -1214,23 +1212,24 @@
                     createdAt: new Date().toISOString()
                 };
 
-                setDecks([...decks, newDeck]);
+                const nextDecks = [...decks, newDeck];
+                setDecks(nextDecks);
+                localStorage.setItem('chefs-deck-decks', JSON.stringify(nextDecks));
+
                 setIsDeckCreatorOpen(false);
                 setDeckFormData({ name: "", recipeIds: [] });
+                setDeckSearchQuery("");
                 showNotification("新しいデッキを作成しました");
-
-                await dispatchWorkflow('save-deck.yml', {
-                    deck_id: newDeck.id,
-                    deck_json: JSON.stringify(newDeck)
-                });
             };
 
-            const deleteDeck = async (id) => {
+            const deleteDeck = (id) => {
                 if (confirm("このデッキを削除しますか？")) {
-                    setDecks(decks.filter(d => d.id !== id));
+                    const nextDecks = decks.filter(d => d.id !== id);
+                    setDecks(nextDecks);
+                    localStorage.setItem('chefs-deck-decks', JSON.stringify(nextDecks));
+
                     if (selectedDeckId === id) setSelectedDeckId(null);
                     showNotification("デッキを削除しました");
-                    // TODO: delete-deck workflow
                 }
             };
 
@@ -1795,30 +1794,59 @@
                                         </div>
 
                                         <div>
-                                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 px-1">
-                                                カードを選択 ({deckFormData.recipeIds.length})
-                                            </label>
-                                            <div className="grid grid-cols-1 gap-2">
-                                                {recipes.map(recipe => {
-                                                    const isSelected = deckFormData.recipeIds.includes(recipe.id);
-                                                    return (
-                                                        <button
-                                                            key={recipe.id}
-                                                            onClick={() => {
-                                                                const newIds = isSelected
-                                                                    ? deckFormData.recipeIds.filter(id => id !== recipe.id)
-                                                                    : [...deckFormData.recipeIds, recipe.id];
-                                                                setDeckFormData(prev => ({ ...prev, recipeIds: newIds }));
-                                                            }}
-                                                            className={`flex items-center gap-3 p-3 rounded-xl border-2 transition-all text-left group ${isSelected ? 'border-brand-orange bg-brand-orange/5' : 'border-slate-100 hover:border-slate-300'}`}
-                                                        >
-                                                            <div className={`w-6 h-6 rounded-lg flex items-center justify-center transition-colors ${isSelected ? 'bg-brand-orange text-white' : 'bg-slate-100 text-transparent group-hover:text-slate-300'}`}>
-                                                                <IconCheck className="w-4 h-4" />
-                                                            </div>
-                                                            <span className={`text-sm font-bold ${isSelected ? 'text-slate-800' : 'text-slate-500'}`}>{recipe.title}</span>
-                                                        </button>
-                                                    );
-                                                })}
+                                            <div className="flex justify-between items-center mb-2 px-1">
+                                                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                                                    カードを選択 ({deckFormData.recipeIds.length})
+                                                </label>
+                                                {deckSearchQuery && (
+                                                    <span className="text-[10px] font-bold text-brand-orange">
+                                                        {recipes.filter(r => r.title.toLowerCase().includes(deckSearchQuery.toLowerCase())).length}件ヒット
+                                                    </span>
+                                                )}
+                                            </div>
+
+                                            <div className="relative mb-4">
+                                                <IconSearch className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                                                <input
+                                                    type="text"
+                                                    placeholder="カード名で検索..."
+                                                    className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-brand-orange/20 focus:border-brand-orange outline-none transition-all"
+                                                    value={deckSearchQuery}
+                                                    onChange={(e) => setDeckSearchQuery(e.target.value)}
+                                                />
+                                                {deckSearchQuery && (
+                                                    <button
+                                                        onClick={() => setDeckSearchQuery("")}
+                                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                                                    >
+                                                        <IconPlus className="w-4 h-4 rotate-45" />
+                                                    </button>
+                                                )}
+                                            </div>
+
+                                            <div className="grid grid-cols-1 gap-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                                                {recipes
+                                                    .filter(recipe => recipe.title.toLowerCase().includes(deckSearchQuery.toLowerCase()))
+                                                    .map(recipe => {
+                                                        const isSelected = deckFormData.recipeIds.includes(recipe.id);
+                                                        return (
+                                                            <button
+                                                                key={recipe.id}
+                                                                onClick={() => {
+                                                                    const newIds = isSelected
+                                                                        ? deckFormData.recipeIds.filter(id => id !== recipe.id)
+                                                                        : [...deckFormData.recipeIds, recipe.id];
+                                                                    setDeckFormData(prev => ({ ...prev, recipeIds: newIds }));
+                                                                }}
+                                                                className={`flex items-center gap-3 p-3 rounded-xl border-2 transition-all text-left group ${isSelected ? 'border-brand-orange bg-brand-orange/5' : 'border-slate-100 hover:border-slate-300'}`}
+                                                            >
+                                                                <div className={`w-6 h-6 rounded-lg flex items-center justify-center transition-colors ${isSelected ? 'bg-brand-orange text-white' : 'bg-slate-100 text-transparent group-hover:text-slate-300'}`}>
+                                                                    <IconCheck className="w-4 h-4" />
+                                                                </div>
+                                                                <span className={`text-sm font-bold ${isSelected ? 'text-slate-800' : 'text-slate-500'}`}>{recipe.title}</span>
+                                                            </button>
+                                                        );
+                                                    })}
                                             </div>
                                         </div>
                                     </div>
