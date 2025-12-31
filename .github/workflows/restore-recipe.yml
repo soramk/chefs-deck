@@ -1,46 +1,48 @@
 name: Restore Recipe
 
 on:
-    workflow_dispatch:
-        inputs:
-            recipe_id:
-                description: "Recipe ID to restore"
-                required: true
+  workflow_dispatch:
+    inputs:
+      recipe_id:
+        description: "Recipe ID to restore"
+        required: true
 
 jobs:
-    restore:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-            - name: Setup Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: "20"
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
 
-            - name: Move back to data folder
-              run: |
-                  mkdir -p data
-                  FILE="data/old/recipe-${{ github.event.inputs.recipe_id }}.json"
-                  if [ -f "$FILE" ]; then
-                    mv "$FILE" data/
-                  else
-                    FILE="data/old/${{ github.event.inputs.recipe_id }}.json"
-                    if [ -f "$FILE" ]; then
-                      mv "$FILE" data/
-                    else
-                      echo "Recipe file not found in old/: ${{ github.event.inputs.recipe_id }}"
-                      exit 1
-                    fi
-                  fi
+      - name: Move back to data folder
+        run: |
+          mkdir -p data
+          FILE="data/old/recipe-${{ github.event.inputs.recipe_id }}.json"
+          if [ -f "$FILE" ]; then
+            mv "$FILE" data/
+          else
+            FILE="data/old/${{ github.event.inputs.recipe_id }}.json"
+            if [ -f "$FILE" ]; then
+              mv "$FILE" data/
+            else
+              echo "Recipe file not found in old/: ${{ github.event.inputs.recipe_id }}"
+              exit 1
+            fi
+          fi
 
-            - name: Regenerate recipes.json
-              run: node api/recipes.json.js
+      - name: Generate API JSON files
+        run: |
+          node api/recipes.json.js
+          node api/ai-usage.json.js
 
-            - name: Commit and push
-              run: |
-                  git config --global user.name "github-actions[bot]"
-                  git config --global user.email "github-actions[bot]@users.noreply.github.com"
-                  git add data/ api/
-                  git commit -m "Restore recipe ${{ github.event.inputs.recipe_id }}" || echo "No changes to commit"
-                  git push
+      - name: Commit and push
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/ api/
+          git commit -m "Restore recipe ${{ github.event.inputs.recipe_id }}" || echo "No changes to commit"
+          git push

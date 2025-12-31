@@ -53,7 +53,7 @@ jobs:
         run: |
           node scripts/scrape-recipe.js "$RECIPE_URL" "$USE_GEMINI" "$GEMINI_MODEL"
 
-      - name: Generate recipes.json and AI usage logs
+      - name: Generate API JSON files
         run: |
           node api/recipes.json.js
           node api/ai-usage.json.js
