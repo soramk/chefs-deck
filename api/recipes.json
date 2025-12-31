@@ -39,7 +39,8 @@
     "notes": "",
     "scrapedAt": "2025-12-30T17:22:14.711Z",
     "scrapingProtocol": "gemini-api",
-    "source": "www.kurashiru.com"
+    "source": "www.kurashiru.com",
+    "isFavorite": false
   },
   {
     "id": 1767114284106,
